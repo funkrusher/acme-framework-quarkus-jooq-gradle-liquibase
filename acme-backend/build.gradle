@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'io.quarkus'
+}
+
+// dependencies-resolvement
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+dependencies {
+    implementation project(':acme-code-generator')
+    implementation enforcedPlatform(libs.quarkusPlaform)
+    implementation libs.bundles.quarkus
+    implementation libs.bundles.jooq
+    implementation libs.slf4jJbossLogmanager
+    implementation libs.mariadbJavaClient
+
+    testImplementation libs.bundles.test.quarkus
+    testImplementation libs.bundles.test.testcontainers
+    testImplementation libs.flywayMysql
+    testImplementation libs.awaitility
+    testImplementation libs.mariadbJavaClient
+    testImplementation libs.restAssured
+}

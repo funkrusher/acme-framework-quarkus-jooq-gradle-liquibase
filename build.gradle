@@ -1,0 +1,30 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.kordamp.gradle.jandex'
+}
+
+group 'org.acme'
+version '1.0.0-SNAPSHOT'
+
+// java-settings for the whole project
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+compileJava {
+    options.encoding = "UTF-8"
+    options.compilerArgs << "-parameters"
+}
+compileTestJava {
+    options.encoding = "UTF-8"
+}
+
+// idea-settings for the whole project
+idea {
+    project {
+        jdkName = '17'
+        languageLevel = '17'
+        vcs = 'Git'
+    }
+}

@@ -1,0 +1,79 @@
+pluginManagement {
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+        mavenLocal()
+    }
+    plugins {
+        id "io.quarkus" version '2.16.4.Final'
+        id "org.flywaydb.flyway" version '9.8.3'
+        id "org.kordamp.gradle.jandex" version "1.1.0"
+    }
+}
+
+dependencyResolutionManagement {
+    versionCatalogs {
+        libs {
+            // versions
+            version('quarkus', '3.0.0.Beta1')
+            version('mariadb-java-client', '3.0.6')
+            version('testcontainers', '1.17.6')
+            version('rest-assured', '4.4.0')
+            version('awaitility', '4.1.0')
+            version('flyway', '9.15.2')
+            version('jooq', '3.16.16')
+            version('slf4j-jboss-logmanager', '2.6.1.Final')
+
+            // slf4j-jboss-logmanager (links quarkus jboss-logging so it can log jOOQs slf4j logging)
+            library('slf4jJbossLogmanager', 'org.jboss.slf4j', 'slf4j-jboss-logmanager').versionRef('slf4j-jboss-logmanager')
+
+            // quarkus
+            plugin('quarkusPlugin', 'io.quarkus').versionRef('quarkus')
+            library('quarkusPlaform', 'io.quarkus.platform', 'quarkus-bom').versionRef('quarkus')
+            library('quarkusFlyway', 'io.quarkus', 'quarkus-flyway').versionRef('quarkus')
+            library('quarkusArc', 'io.quarkus', 'quarkus-arc').versionRef('quarkus')
+            library('quarkusJdbcMariadb', 'io.quarkus', 'quarkus-jdbc-mariadb').versionRef('quarkus')
+            library('quarkusResteasyReactiveJackson', 'io.quarkus', 'quarkus-resteasy-reactive-jackson').versionRef('quarkus')
+            library('quarkusSmallryeOpenapi', 'io.quarkus', 'quarkus-smallrye-openapi').versionRef('quarkus')
+            library('quarkusJunit5', 'io.quarkus', 'quarkus-junit5').versionRef('quarkus')
+            library('quarkusHibernateValidator', 'io.quarkus', 'quarkus-hibernate-validator').versionRef('quarkus')
+
+            // mariadb-java-client
+            library('mariadbJavaClient', 'org.mariadb.jdbc', 'mariadb-java-client').versionRef('mariadb-java-client')
+
+            // rest-assured
+            library('restAssured', 'io.rest-assured', 'rest-assured').versionRef('rest-assured')
+
+            // awaitility
+            library('awaitility', 'org.awaitility', 'awaitility').versionRef('awaitility')
+
+            // flyway
+            library('flywayCore', 'org.flywaydb', 'flyway-core').versionRef('flyway')
+            library('flywayMysql', 'org.flywaydb', 'flyway-mysql').versionRef('flyway')
+
+            // jooq
+            library('jooq', 'org.jooq', 'jooq').versionRef('jooq')
+            library('jooqMeta', 'org.jooq', 'jooq-meta').versionRef('jooq')
+            library('jooqCodegen', 'org.jooq', 'jooq-codegen').versionRef('jooq')
+
+            // testcontainers
+            library('testcontainers', 'org.testcontainers', 'testcontainers').versionRef('testcontainers')
+            library('testcontainersMariadb', 'org.testcontainers', 'mariadb').versionRef('testcontainers')
+            library('testcontainersJunitJupiter', 'org.testcontainers', 'junit-jupiter').versionRef('testcontainers')
+
+            // bundles
+            bundle('quarkus', ['quarkusFlyway', 'quarkusArc', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusFlyway', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator'])
+            bundle('testcontainers', ['testcontainers', 'testcontainersMariadb'])
+            bundle('jooq', ['jooq', 'jooqMeta', 'jooqCodegen'])
+            bundle('flyway', ['flywayCore', 'flywayMysql'])
+
+            // test-bundles
+            bundle('test.quarkus', ['quarkusJunit5', 'quarkusFlyway', 'quarkusArc', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusFlyway', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator'])
+            bundle('test.testcontainers', ['testcontainers', 'testcontainersMariadb', 'testcontainersJunitJupiter'])
+        }
+    }
+}
+
+rootProject.name='acme-framework'
+include 'acme-code-generator'
+include 'acme-backend'

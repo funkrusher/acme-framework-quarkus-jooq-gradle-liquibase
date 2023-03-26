@@ -1,0 +1,44 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'org.kordamp.gradle.jandex'
+}
+
+// dependencies-resolvement
+repositories {
+    mavenCentral()
+}
+dependencies {
+    implementation libs.bundles.jooq
+    implementation libs.bundles.flyway
+    implementation libs.bundles.testcontainers
+    implementation libs.mariadbJavaClient
+    implementation libs.quarkusHibernateValidator
+}
+
+// configure generated/src-directories, necessary for use in intellij-idea.
+def mySrcDir = "src/main/java"
+def generatedDir = "src/main/generated"
+sourceSets {
+    main {
+        java {
+            srcDir generatedDir
+            srcDir mySrcDir
+        }
+    }
+}
+idea {
+    module {
+        generatedSourceDirs.addAll(file(generatedDir))
+        sourceDirs.addAll(file(generatedDir))
+        sourceDirs.addAll(file(mySrcDir))
+    }
+}
+
+// jooqCodeGenerator task
+task generateJooqCode(type: JavaExec) {
+    group = 'application'
+    description = 'Runs JooqCodeGenerator Java Application'
+    mainClass = 'org.acme.generator.JooqCodeGenerator'
+    classpath = sourceSets.main.runtimeClasspath
+}
