@@ -45,6 +45,8 @@ for help setting up your environment.
 
 ### Configuring application.properties
 
+Copy the file `acme-backend/src/main/resources/application-template.properties` to `application.properties`.
+
 Edit the file `acme-backend/src/main/resources/application.properties` in your editor of choice and set the following settings for a connection with your Mariadb database:
 ```code
 quarkus.datasource.jdbc.url=jdbc:mariadb://localhost:3306/testshop
