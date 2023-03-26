@@ -67,7 +67,7 @@ You can then navigate your webbrowser directly to the swagger-ui:
 
 Start the jOOQ Code-Generator from the Console with following command:
 ```code
-./gradlew generateJooqCode
+gradlew generateJooqCode
 ```
 The generated code will reside in the folder `acme-code-generator/src/main/generated`. The generator will fire up a mariadb-testcontainer automatically, apply the flyway-migrations to it and will then generate the code from this database-schema. Afterwards the testcontainer is stopped again. 
 
@@ -75,7 +75,7 @@ The generated code will reside in the folder `acme-code-generator/src/main/gener
 
 Start the Unit-Tests from the Console with following command:
 ```code
-./gradlew test
+gradlew test
 ```
 The testing-framework will fire up a mariadb-testcontainer automatically and will apply the flyway-migrations to it. 
 This way the Unit-Tests can expect a real database to be available behind the tested code, and with the help of jOOQ the expected database-content can be validated after each test.
@@ -84,7 +84,7 @@ This way the Unit-Tests can expect a real database to be available behind the te
 
 Start the Native Build from the Console with following command:
 ```shell script
-./gradlew clean buildNative "-Dquarkus.profile=dockerized"
+gradlew clean buildNative "-Dquarkus.profile=dockerized"
 ```
 It will use the `am-backend/src/main/resources/application-dockerized.properties` as configuration and will do a native build with it. 
 The build produces the `quarkus-run.jar` file in the `build/quarkus-app/` directory along with other files.
