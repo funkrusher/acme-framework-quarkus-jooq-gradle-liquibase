@@ -1,5 +1,6 @@
 package org.acme.rest;
 
+import org.acme.util.exception.ValidationException;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.acme.dtos.ProductDTO;
@@ -50,7 +51,7 @@ public class ProductResourceV1 {
     @APIResponse(responseCode = "201", description = "product creation successful")
     @APIResponse(responseCode = "500", description = "Server unavailable")
     @Path("/")
-    public Response create(ProductDTO product) {
+    public Response create(ProductDTO product) throws ValidationException {
         RequestContext requestContext = new RequestContext(1, 1);
         ProductDTO created = productService.create(requestContext, product);
         return Response.ok(created).status(201).build();

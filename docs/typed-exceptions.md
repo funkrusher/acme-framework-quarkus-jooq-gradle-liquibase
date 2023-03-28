@@ -1,0 +1,6 @@
+
+MappingException
+
+NoSuchRecordException
+
+ValidationException

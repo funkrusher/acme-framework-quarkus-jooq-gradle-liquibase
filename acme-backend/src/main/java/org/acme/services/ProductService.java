@@ -10,6 +10,7 @@ import org.acme.dtos.ProductLangDTO;
 import org.acme.generated.AbstractDTO;
 import org.acme.jooq.JooqContext;
 import org.acme.jooq.JooqContextFactory;
+import org.acme.util.exception.ValidationException;
 import org.acme.util.query.QueryParameters;
 import org.acme.util.request.RequestContext;
 import org.jooq.exception.DataAccessException;
@@ -57,18 +58,15 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductDTO create(final RequestContext requestContext, final ProductDTO product) {
+    public ProductDTO create(final RequestContext requestContext, final ProductDTO product) throws ValidationException {
         JooqContext jooqContext = jooqContextFactory.createJooqContext(requestContext);
         ProductRecordDAO productRecordDAO = daoFactory.createProductRecordDAO(jooqContext);
         ProductLangRecordDAO productLangRecordDAO = daoFactory.createProductLangRecordDAO(jooqContext);
 
-        Set<ConstraintViolation<ProductDTO>> violations = validator.validate(product);
-        if (!violations.isEmpty()) {
-            // handle validation errors
-            for (ConstraintViolation<ProductDTO> violation : violations) {
-                System.out.println(violation.getMessage());
-            }
-        }
+        // Set<ConstraintViolation<ProductDTO>> violations = validator.validate(product);
+        // if (!violations.isEmpty()) {
+        //     throw new ValidationException(violations);
+        // }
 
         // we first use insertAndReturn() to insert the product and get the autoincrement-id for it
         // afterwards we use insert() to insert the productLanguages in the most performant (batching) way.

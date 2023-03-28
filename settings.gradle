@@ -16,7 +16,7 @@ dependencyResolutionManagement {
         libs {
             // versions
             version('quarkus', '3.0.0.Beta1')
-            version('mariadb-java-client', '3.0.6')
+            version('mariadb-java-client', '3.1.2')
             version('testcontainers', '1.17.6')
             version('rest-assured', '4.4.0')
             version('awaitility', '4.1.0')
@@ -37,6 +37,7 @@ dependencyResolutionManagement {
             library('quarkusSmallryeOpenapi', 'io.quarkus', 'quarkus-smallrye-openapi').versionRef('quarkus')
             library('quarkusJunit5', 'io.quarkus', 'quarkus-junit5').versionRef('quarkus')
             library('quarkusHibernateValidator', 'io.quarkus', 'quarkus-hibernate-validator').versionRef('quarkus')
+            library('quarkusProfiles', 'io.quarkus', 'quarkus-arc').versionRef('quarkus')
 
             // mariadb-java-client
             library('mariadbJavaClient', 'org.mariadb.jdbc', 'mariadb-java-client').versionRef('mariadb-java-client')
@@ -62,13 +63,13 @@ dependencyResolutionManagement {
             library('testcontainersJunitJupiter', 'org.testcontainers', 'junit-jupiter').versionRef('testcontainers')
 
             // bundles
-            bundle('quarkus', ['quarkusFlyway', 'quarkusArc', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusFlyway', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator'])
+            bundle('quarkus', ['quarkusFlyway', 'quarkusArc', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusFlyway', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusProfiles'])
             bundle('testcontainers', ['testcontainers', 'testcontainersMariadb'])
             bundle('jooq', ['jooq', 'jooqMeta', 'jooqCodegen'])
             bundle('flyway', ['flywayCore', 'flywayMysql'])
 
             // test-bundles
-            bundle('test.quarkus', ['quarkusJunit5', 'quarkusFlyway', 'quarkusArc', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusFlyway', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator'])
+            bundle('test.quarkus', ['quarkusJunit5', 'quarkusFlyway', 'quarkusArc', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusFlyway', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusProfiles'])
             bundle('test.testcontainers', ['testcontainers', 'testcontainersMariadb', 'testcontainersJunitJupiter'])
         }
     }
