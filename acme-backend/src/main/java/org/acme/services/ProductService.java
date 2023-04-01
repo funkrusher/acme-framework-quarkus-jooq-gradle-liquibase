@@ -136,11 +136,12 @@ public class ProductService {
         // TODO: try to find how this can be put into the Abstraction,
         Stream<ProductRecord> stream1 = jooqContext.getCtx()
                 .selectFrom(Product.PRODUCT)
-                .fetchSize(100)
+                .fetchSize(250)
                 .fetchStream();
-        Stream<List<ProductRecord>> chunkStream = chunk(stream1, 100);
+        Stream<List<ProductRecord>> chunkStream = chunk(stream1, 250);
 
-        Stream<ProductDTO> resultStream = chunkStream.map(records -> {
+        // the "parallel" is important here, as it really pushes performance.
+        Stream<ProductDTO> resultStream = chunkStream.parallel().map(records -> {
             List<Long> ids = new ArrayList<>();
             for (ProductRecord record : records) {
                 ids.add(record.getProductId());
