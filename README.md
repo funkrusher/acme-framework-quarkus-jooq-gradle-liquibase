@@ -1,4 +1,4 @@
-# Quarkus demo: jOOQ with Flyway, RESTEasy, Gradle, Testcontainers
+# Quarkus demo: jOOQ with Liquibase, RESTEasy, Gradle, Testcontainers
 
 This is a minimal CRUD service exposing a couple of endpoints over REST. 
 
@@ -13,7 +13,7 @@ Under the hood, the code is using:
 - jOOQ Framework
   - Object Oriented Querying on the database
   - Db-Schema-To-Code-Generator
-- Flyway Db-Migrations
+- Liquibase Db-Migrations
 - Mariadb-Testcontainer for Unit-Tests and Code-Generator
 - Gradle Build
   - Multi-Module project for shared-libraries approach 
@@ -69,7 +69,7 @@ Start the jOOQ Code-Generator from the Console with following command:
 ```code
 gradlew generateJooqCode
 ```
-The generated code will reside in the folder `acme-code-generator/src/main/generated`. The generator will fire up a mariadb-testcontainer automatically, apply the flyway-migrations to it and will then generate the code from this database-schema. Afterwards the testcontainer is stopped again. 
+The generated code will reside in the folder `acme-code-generator/src/main/generated`. The generator will fire up a mariadb-testcontainer automatically, apply the liquibase-migrations to it and will then generate the code from this database-schema. Afterwards the testcontainer is stopped again. 
 
 ## Running the Unit-Tests
 
@@ -77,7 +77,7 @@ Start the Unit-Tests from the Console with following command:
 ```code
 gradlew test
 ```
-The testing-framework will fire up a mariadb-testcontainer automatically and will apply the flyway-migrations to it. 
+The testing-framework will fire up a mariadb-testcontainer automatically and will apply the liquibase-migrations to it. 
 This way the Unit-Tests can expect a real database to be available behind the tested code, and with the help of jOOQ the expected database-content can be validated after each test.
 
 ## Dockerizing the application
@@ -123,7 +123,7 @@ gradlew -p acme-backend dependencyInsight --dependency validation-api --configur
 
 ## Related Guides
 - GraalVM ([installation-guide](https://www.graalvm.org/latest/docs/getting-started/windows/), [release-download](https://github.com/graalvm/graalvm-ce-builds/releases)): GraalVM Installation
-- Flyway ([guide](https://quarkus.io/guides/flyway)): Handle your database schema migrations
+- Liquibase ([guide](https://docs.liquibase.com/concepts/home.html)): Handle your database schema migrations
 - Gradle+Quarkus ([guide](https://quarkus.io/guides/gradle-tooling)): Building quarkus apps with gradle
 - Gradle+IDEA ([gradle-guide](https://docs.gradle.org/current/userguide/idea_plugin.html), [idea-guide](https://www.jetbrains.com/help/idea/work-with-gradle-projects.html#project_encodings)): Setting up gradle with IDEA
 - jOOQ ([guide](https://www.jooq.org/doc/3.18/manual/)): Handle your database querying
