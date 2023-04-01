@@ -19,7 +19,6 @@ dependencies {
 
     testImplementation libs.bundles.test.quarkus
     testImplementation libs.bundles.test.testcontainers
-    testImplementation libs.flywayMysql
     testImplementation libs.awaitility
     testImplementation libs.mariadbJavaClient
     testImplementation libs.restAssured

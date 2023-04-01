@@ -9,11 +9,11 @@ repositories {
     mavenCentral()
 }
 dependencies {
+    implementation enforcedPlatform(libs.quarkusPlaform)
+    implementation libs.bundles.quarkus
     implementation libs.bundles.jooq
-    implementation libs.bundles.flyway
     implementation libs.bundles.testcontainers
     implementation libs.mariadbJavaClient
-    implementation libs.quarkusHibernateValidator
 }
 
 // configure generated/src-directories, necessary for use in intellij-idea.
@@ -41,4 +41,5 @@ task generateJooqCode(type: JavaExec) {
     description = 'Runs JooqCodeGenerator Java Application'
     mainClass = 'org.acme.generator.JooqCodeGenerator'
     classpath = sourceSets.main.runtimeClasspath
+    dependsOn("jandex")
 }

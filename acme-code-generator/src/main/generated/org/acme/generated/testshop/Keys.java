@@ -7,12 +7,12 @@ package org.acme.generated.testshop;
 import jakarta.validation.Valid;
 
 import org.acme.generated.testshop.tables.Client;
-import org.acme.generated.testshop.tables.FlywaySchemaHistory;
+import org.acme.generated.testshop.tables.Databasechangeloglock;
 import org.acme.generated.testshop.tables.Lang;
 import org.acme.generated.testshop.tables.Product;
 import org.acme.generated.testshop.tables.ProductLang;
 import org.acme.generated.testshop.tables.records.ClientRecord;
-import org.acme.generated.testshop.tables.records.FlywaySchemaHistoryRecord;
+import org.acme.generated.testshop.tables.records.DatabasechangeloglockRecord;
 import org.acme.generated.testshop.tables.records.LangRecord;
 import org.acme.generated.testshop.tables.records.ProductLangRecord;
 import org.acme.generated.testshop.tables.records.ProductRecord;
@@ -36,7 +36,7 @@ public class Keys {
     // -------------------------------------------------------------------------
 
     public static final UniqueKey<ClientRecord> KEY_CLIENT_PRIMARY = Internal.createUniqueKey(Client.CLIENT, DSL.name("KEY_client_PRIMARY"), new TableField[] { Client.CLIENT.CLIENTID }, true);
-    public static final UniqueKey<FlywaySchemaHistoryRecord> KEY_FLYWAY_SCHEMA_HISTORY_PRIMARY = Internal.createUniqueKey(FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY, DSL.name("KEY_flyway_schema_history_PRIMARY"), new TableField[] { FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY.INSTALLED_RANK }, true);
+    public static final UniqueKey<DatabasechangeloglockRecord> KEY_DATABASECHANGELOGLOCK_PRIMARY = Internal.createUniqueKey(Databasechangeloglock.DATABASECHANGELOGLOCK, DSL.name("KEY_DATABASECHANGELOGLOCK_PRIMARY"), new TableField[] { Databasechangeloglock.DATABASECHANGELOGLOCK.ID }, true);
     public static final UniqueKey<LangRecord> KEY_LANG_PRIMARY = Internal.createUniqueKey(Lang.LANG, DSL.name("KEY_lang_PRIMARY"), new TableField[] { Lang.LANG.LANGID }, true);
     public static final UniqueKey<ProductRecord> KEY_PRODUCT_PRIMARY = Internal.createUniqueKey(Product.PRODUCT, DSL.name("KEY_product_PRIMARY"), new TableField[] { Product.PRODUCT.PRODUCTID }, true);
     public static final UniqueKey<ProductLangRecord> KEY_PRODUCT_LANG_PRIMARY = Internal.createUniqueKey(ProductLang.PRODUCT_LANG, DSL.name("KEY_product_lang_PRIMARY"), new TableField[] { ProductLang.PRODUCT_LANG.PRODUCTID, ProductLang.PRODUCT_LANG.LANGID }, true);

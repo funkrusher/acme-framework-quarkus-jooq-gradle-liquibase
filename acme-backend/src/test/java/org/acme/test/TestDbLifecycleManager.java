@@ -1,11 +1,18 @@
 package org.acme.test;
 
 import io.quarkus.test.common.QuarkusTestResourceLifecycleManager;
+import liquibase.Liquibase;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.exception.LiquibaseException;
+import liquibase.resource.DirectoryResourceAccessor;
+import liquibase.resource.ResourceAccessor;
 import org.awaitility.Awaitility;
-import org.flywaydb.core.Flyway;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -45,7 +52,11 @@ public class TestDbLifecycleManager implements QuarkusTestResourceLifecycleManag
         jdbcUrl.put("mariadb.testcontainer.database", String.valueOf(container.getDatabaseName()));
 
         createDatabase(container.getJdbcUrl(), container.getUsername(), container.getPassword());
-        migrateDatabase(container.getJdbcUrl(), container.getUsername(), container.getPassword());
+        try {
+            migrateDatabase(container.getJdbcUrl(), container.getUsername(), container.getPassword());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         return jdbcUrl;
     }
 
@@ -63,12 +74,14 @@ public class TestDbLifecycleManager implements QuarkusTestResourceLifecycleManag
         }
     }
 
-    private void migrateDatabase(String jdbcUrl, String username, String password) {
-        Flyway.configure()
-                .dataSource(jdbcUrl, username, password)
-                .locations("db/migration")
-                .load()
-                .migrate();
+    private void migrateDatabase(String jdbcUrl, String username, String password) throws FileNotFoundException, SQLException, LiquibaseException {
+        // Configure Liquibase
+        ResourceAccessor resourceAccessor = new DirectoryResourceAccessor(new File("src/main/resources/liquibase"));
+        Connection connection = DriverManager.getConnection(container.getJdbcUrl(), container.getUsername(), container.getPassword());
+        Liquibase liquibase = new liquibase.Liquibase("changelog.xml", resourceAccessor,
+                DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection)));
+        liquibase.update("");
+        connection.close();
     }
 
     private void waitUntilContainerStarted() {

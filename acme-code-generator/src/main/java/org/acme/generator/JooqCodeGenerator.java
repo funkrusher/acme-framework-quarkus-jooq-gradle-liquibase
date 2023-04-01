@@ -1,14 +1,23 @@
 package org.acme.generator;
 
-import org.flywaydb.core.Flyway;
+import liquibase.Liquibase;
+import liquibase.database.DatabaseFactory;
+import liquibase.database.jvm.JdbcConnection;
+import liquibase.resource.ClassLoaderResourceAccessor;
+import liquibase.resource.DirectoryResourceAccessor;
+import liquibase.resource.FileSystemResourceAccessor;
+import liquibase.resource.ResourceAccessor;
 import org.jooq.codegen.GenerationTool;
 import org.jooq.meta.jaxb.*;
 import org.testcontainers.containers.MariaDBContainer;
 import org.testcontainers.shaded.org.awaitility.Awaitility;
 import org.testcontainers.utility.DockerImageName;
 
+import java.io.File;
 import java.time.Duration;
-
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class JooqCodeGenerator {
 
@@ -24,15 +33,17 @@ public class JooqCodeGenerator {
                 .pollInterval(Duration.ofSeconds(1))
                 .until(container::isRunning);
 
-        try {
-            // Configure Flyway
-            Flyway flyway = Flyway.configure()
-                    .dataSource(container.getJdbcUrl(), container.getUsername(), container.getPassword())
-                    .locations("filesystem:../acme-backend/src/main/resources/db/migration")
-                    .load();
+        String currentDirectory = System.getProperty("user.dir");
+        System.out.println("Current working directory is: " + currentDirectory);
 
-            // Migrate the database using Flyway
-            flyway.migrate();
+        try {
+            // Configure Liquibase
+            ResourceAccessor resourceAccessor = new DirectoryResourceAccessor(new File("../acme-backend/src/main/resources/liquibase"));
+            Connection connection = DriverManager.getConnection(container.getJdbcUrl(), container.getUsername(), container.getPassword());
+            Liquibase liquibase = new liquibase.Liquibase("changelog.xml", resourceAccessor,
+                    DatabaseFactory.getInstance().findCorrectDatabaseImplementation(new JdbcConnection(connection)));
+            liquibase.update("");
+            connection.close();
 
             // Generate JOOQ code programmatically
             Configuration configuration = new Configuration()

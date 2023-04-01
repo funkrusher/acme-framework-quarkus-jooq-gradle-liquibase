@@ -7,7 +7,8 @@ package org.acme.generated.testshop;
 import jakarta.validation.Valid;
 
 import org.acme.generated.testshop.tables.Client;
-import org.acme.generated.testshop.tables.FlywaySchemaHistory;
+import org.acme.generated.testshop.tables.Databasechangelog;
+import org.acme.generated.testshop.tables.Databasechangeloglock;
 import org.acme.generated.testshop.tables.Lang;
 import org.acme.generated.testshop.tables.Product;
 import org.acme.generated.testshop.tables.ProductLang;
@@ -26,9 +27,14 @@ public class Tables {
     public static final Client CLIENT = Client.CLIENT;
 
     /**
-     * The table <code>testshop.flyway_schema_history</code>.
+     * The table <code>testshop.DATABASECHANGELOG</code>.
      */
-    public static final FlywaySchemaHistory FLYWAY_SCHEMA_HISTORY = FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY;
+    public static final Databasechangelog DATABASECHANGELOG = Databasechangelog.DATABASECHANGELOG;
+
+    /**
+     * The table <code>testshop.DATABASECHANGELOGLOCK</code>.
+     */
+    public static final Databasechangeloglock DATABASECHANGELOGLOCK = Databasechangeloglock.DATABASECHANGELOGLOCK;
 
     /**
      * The table <code>testshop.lang</code>.

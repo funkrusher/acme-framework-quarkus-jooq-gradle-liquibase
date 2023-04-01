@@ -11,7 +11,8 @@ import java.util.List;
 
 import org.acme.generated.DefaultCatalog;
 import org.acme.generated.testshop.tables.Client;
-import org.acme.generated.testshop.tables.FlywaySchemaHistory;
+import org.acme.generated.testshop.tables.Databasechangelog;
+import org.acme.generated.testshop.tables.Databasechangeloglock;
 import org.acme.generated.testshop.tables.Lang;
 import org.acme.generated.testshop.tables.Product;
 import org.acme.generated.testshop.tables.ProductLang;
@@ -40,9 +41,14 @@ public class Testshop extends SchemaImpl {
     public final Client CLIENT = Client.CLIENT;
 
     /**
-     * The table <code>testshop.flyway_schema_history</code>.
+     * The table <code>testshop.DATABASECHANGELOG</code>.
      */
-    public final FlywaySchemaHistory FLYWAY_SCHEMA_HISTORY = FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY;
+    public final Databasechangelog DATABASECHANGELOG = Databasechangelog.DATABASECHANGELOG;
+
+    /**
+     * The table <code>testshop.DATABASECHANGELOGLOCK</code>.
+     */
+    public final Databasechangeloglock DATABASECHANGELOGLOCK = Databasechangeloglock.DATABASECHANGELOGLOCK;
 
     /**
      * The table <code>testshop.lang</code>.
@@ -76,7 +82,8 @@ public class Testshop extends SchemaImpl {
     public final List<Table<?>> getTables() {
         return Arrays.asList(
             Client.CLIENT,
-            FlywaySchemaHistory.FLYWAY_SCHEMA_HISTORY,
+            Databasechangelog.DATABASECHANGELOG,
+            Databasechangeloglock.DATABASECHANGELOGLOCK,
             Lang.LANG,
             Product.PRODUCT,
             ProductLang.PRODUCT_LANG
