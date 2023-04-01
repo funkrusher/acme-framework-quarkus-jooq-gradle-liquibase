@@ -122,6 +122,53 @@ public class ProductLang extends AbstractDTO implements IProductLang {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final ProductLang other = (ProductLang) obj;
+        if (this.productId == null) {
+            if (other.productId != null)
+                return false;
+        }
+        else if (!this.productId.equals(other.productId))
+            return false;
+        if (this.langId == null) {
+            if (other.langId != null)
+                return false;
+        }
+        else if (!this.langId.equals(other.langId))
+            return false;
+        if (this.name == null) {
+            if (other.name != null)
+                return false;
+        }
+        else if (!this.name.equals(other.name))
+            return false;
+        if (this.description == null) {
+            if (other.description != null)
+                return false;
+        }
+        else if (!this.description.equals(other.description))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.productId == null) ? 0 : this.productId.hashCode());
+        result = prime * result + ((this.langId == null) ? 0 : this.langId.hashCode());
+        result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
+        result = prime * result + ((this.description == null) ? 0 : this.description.hashCode());
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("ProductLang (");
 

@@ -1,5 +1,7 @@
 package org.acme.rest;
 
+import io.smallrye.mutiny.Multi;
+import io.vertx.core.http.HttpServerResponse;
 import org.acme.util.exception.ValidationException;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -76,4 +78,16 @@ public class ProductResourceV1 {
         productService.delete(requestContext, product);
         return Response.status(204).build();
     }
+
+
+    @GET
+    @Path("/stream")
+    public Multi<ProductDTO> streamAll() {
+        RequestContext requestContext = new RequestContext(1, 1);
+        var stream = productService.streamAll(requestContext);
+
+        // Create a Multi that emits the records asynchronously
+        return Multi.createFrom().items(stream);
+    }
+
 }

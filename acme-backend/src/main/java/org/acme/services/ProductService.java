@@ -8,21 +8,23 @@ import org.acme.daos.view.ProductViewDAO;
 import org.acme.dtos.ProductDTO;
 import org.acme.dtos.ProductLangDTO;
 import org.acme.generated.AbstractDTO;
+import org.acme.generated.testshop.tables.Product;
+import org.acme.generated.testshop.tables.records.ProductLangRecord;
+import org.acme.generated.testshop.tables.records.ProductRecord;
 import org.acme.jooq.JooqContext;
 import org.acme.jooq.JooqContextFactory;
 import org.acme.util.exception.ValidationException;
 import org.acme.util.query.QueryParameters;
 import org.acme.util.request.RequestContext;
 import org.jooq.exception.DataAccessException;
-
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import org.jboss.logging.Logger;
 
@@ -119,5 +121,78 @@ public class ProductService {
         // we do use the explicit delete-by-id methods here, because they are the most performant.
         productLangRecordDAO.deleteByProductId(product.getProductId());
         productRecordDAO.deleteById(product.getProductId());
+    }
+
+    /**
+     * Trying out streaming
+     *
+     * @param requestContext requestContext
+     * @return stream
+     */
+    public Stream<ProductDTO> streamAll(final RequestContext requestContext) {
+        JooqContext jooqContext = jooqContextFactory.createJooqContext(requestContext);
+        ProductLangRecordDAO productLangRecordDAO = daoFactory.createProductLangRecordDAO(jooqContext);
+
+        // TODO: try to find how this can be put into the Abstraction,
+        Stream<ProductRecord> stream1 = jooqContext.getCtx()
+                .selectFrom(Product.PRODUCT)
+                .fetchSize(100)
+                .fetchStream();
+        Stream<List<ProductRecord>> chunkStream = chunk(stream1, 100);
+
+        Stream<ProductDTO> resultStream = chunkStream.map(records -> {
+            List<Long> ids = new ArrayList<>();
+            for (ProductRecord record : records) {
+                ids.add(record.getProductId());
+            }
+            List<ProductLangRecord> xLangs = productLangRecordDAO.fetchAllByProductsIds(ids);
+
+            List<ProductDTO> products = new ArrayList<>();
+            for (ProductRecord record : records) {
+                ProductDTO product = record.into(new ProductDTO());
+
+                List<ProductLangDTO> productLangs = new ArrayList<>();
+                for (ProductLangRecord lang : xLangs) {
+                    ProductLangDTO productLang = lang.into(new ProductLangDTO());
+                    if (productLang.getProductId().equals(product.getProductId())) {
+                        productLangs.add(productLang);
+                        if (productLang.getLangId().equals(requestContext.getLangId())) {
+                            product.setLang(productLang);
+                        }
+                    }
+                }
+                product.setLangs(productLangs);
+                products.add(product);
+            }
+            return products;
+        }).flatMap(List::stream);
+
+        return resultStream;
+    }
+
+    /**
+     * Helper function to chunk a stream of items into a stream of List of items.
+     *
+     * @param stream stream
+     * @param size chunk-size of each chunk
+     * @return stream of list of items.
+     */
+    Stream<List<ProductRecord>> chunk(Stream<ProductRecord> stream, int size) {
+        Iterator<ProductRecord> iterator = stream.iterator();
+        Iterator<List<ProductRecord>> listIterator = new Iterator<>() {
+
+            public boolean hasNext() {
+                return iterator.hasNext();
+            }
+
+            public List<ProductRecord> next() {
+                List<ProductRecord> result = new ArrayList<>(size);
+                for (int i = 0; i < size && iterator.hasNext(); i++) {
+                    result.add(iterator.next());
+                }
+                return result;
+            }
+        };
+        return StreamSupport.stream(((Iterable<List<ProductRecord>>) () -> listIterator).spliterator(), false);
     }
 }

@@ -73,7 +73,7 @@
             VALUES (2, 1, 'Mira Eck Glas USB A',
                     'Eck-Steckdosenelement, 2-fach und Doppel USB Charger (Ladestation). Frontseite in bedrucktem und kratzfestem Glas, fÃ¼r 90Â° Ecke.');
             INSERT INTO product_lang (productId, langId, name, description)
-            VALUES (2, 2, 'Mira corner glass USB A',
+            VALUES (2, 2, 'Mira corner111 glass USB A',
                     'Corner socket element, 2-fold and double USB charger (charging station). Front printed and scratch-resistant glass. for 90Â° corner.');
         </sql>
         <rollback>

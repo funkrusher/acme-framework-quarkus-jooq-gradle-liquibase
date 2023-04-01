@@ -59,6 +59,7 @@ public class JooqCodeGenerator {
                                     .withSerializableInterfaces(true)
                                     .withDaos(true)
                                     .withValidationAnnotations(true)
+                                    .withPojosEqualsAndHashCode(true)
                             )
                             .withStrategy(new Strategy()
                                     .withName("org.acme.generator.MyGeneratorStrategy")

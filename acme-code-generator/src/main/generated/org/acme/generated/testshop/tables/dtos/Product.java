@@ -162,6 +162,67 @@ public class Product extends AbstractDTO implements IProduct {
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Product other = (Product) obj;
+        if (this.productId == null) {
+            if (other.productId != null)
+                return false;
+        }
+        else if (!this.productId.equals(other.productId))
+            return false;
+        if (this.clientId == null) {
+            if (other.clientId != null)
+                return false;
+        }
+        else if (!this.clientId.equals(other.clientId))
+            return false;
+        if (this.price == null) {
+            if (other.price != null)
+                return false;
+        }
+        else if (!this.price.equals(other.price))
+            return false;
+        if (this.createdAt == null) {
+            if (other.createdAt != null)
+                return false;
+        }
+        else if (!this.createdAt.equals(other.createdAt))
+            return false;
+        if (this.updatedAt == null) {
+            if (other.updatedAt != null)
+                return false;
+        }
+        else if (!this.updatedAt.equals(other.updatedAt))
+            return false;
+        if (this.deleted == null) {
+            if (other.deleted != null)
+                return false;
+        }
+        else if (!this.deleted.equals(other.deleted))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.productId == null) ? 0 : this.productId.hashCode());
+        result = prime * result + ((this.clientId == null) ? 0 : this.clientId.hashCode());
+        result = prime * result + ((this.price == null) ? 0 : this.price.hashCode());
+        result = prime * result + ((this.createdAt == null) ? 0 : this.createdAt.hashCode());
+        result = prime * result + ((this.updatedAt == null) ? 0 : this.updatedAt.hashCode());
+        result = prime * result + ((this.deleted == null) ? 0 : this.deleted.hashCode());
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Product (");
 

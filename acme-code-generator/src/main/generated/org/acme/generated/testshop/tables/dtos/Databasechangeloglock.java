@@ -121,6 +121,53 @@ public class Databasechangeloglock extends AbstractDTO implements IDatabasechang
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Databasechangeloglock other = (Databasechangeloglock) obj;
+        if (this.ID == null) {
+            if (other.ID != null)
+                return false;
+        }
+        else if (!this.ID.equals(other.ID))
+            return false;
+        if (this.LOCKED == null) {
+            if (other.LOCKED != null)
+                return false;
+        }
+        else if (!this.LOCKED.equals(other.LOCKED))
+            return false;
+        if (this.LOCKGRANTED == null) {
+            if (other.LOCKGRANTED != null)
+                return false;
+        }
+        else if (!this.LOCKGRANTED.equals(other.LOCKGRANTED))
+            return false;
+        if (this.LOCKEDBY == null) {
+            if (other.LOCKEDBY != null)
+                return false;
+        }
+        else if (!this.LOCKEDBY.equals(other.LOCKEDBY))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.ID == null) ? 0 : this.ID.hashCode());
+        result = prime * result + ((this.LOCKED == null) ? 0 : this.LOCKED.hashCode());
+        result = prime * result + ((this.LOCKGRANTED == null) ? 0 : this.LOCKGRANTED.hashCode());
+        result = prime * result + ((this.LOCKEDBY == null) ? 0 : this.LOCKEDBY.hashCode());
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Databasechangeloglock (");
 

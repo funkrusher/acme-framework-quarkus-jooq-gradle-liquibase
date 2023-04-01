@@ -7,6 +7,8 @@ import org.acme.generated.testshop.tables.records.ProductLangRecord;
 import org.acme.jooq.JooqContext;
 import org.jooq.Record2;
 
+import java.util.List;
+
 /**
  * ProductLangRecordDAO
  */
@@ -30,4 +32,9 @@ public class ProductLangRecordDAO extends AbstractRecordDAO<ProductLangRecord, I
     public int deleteByProductId(Long productId) {
         return ctx().deleteFrom(table()).where(ProductLang.PRODUCT_LANG.PRODUCTID.eq(productId)).execute();
     }
+
+    public List<ProductLangRecord> fetchAllByProductsIds(List<Long> productIds) {
+        return ctx().selectFrom(table()).where(ProductLang.PRODUCT_LANG.PRODUCTID.in(productIds)).fetch();
+    }
+
 }

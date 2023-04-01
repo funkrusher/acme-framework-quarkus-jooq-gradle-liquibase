@@ -346,6 +346,123 @@ public class Databasechangelog extends AbstractDTO implements IDatabasechangelog
     }
 
     @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        final Databasechangelog other = (Databasechangelog) obj;
+        if (this.ID == null) {
+            if (other.ID != null)
+                return false;
+        }
+        else if (!this.ID.equals(other.ID))
+            return false;
+        if (this.AUTHOR == null) {
+            if (other.AUTHOR != null)
+                return false;
+        }
+        else if (!this.AUTHOR.equals(other.AUTHOR))
+            return false;
+        if (this.FILENAME == null) {
+            if (other.FILENAME != null)
+                return false;
+        }
+        else if (!this.FILENAME.equals(other.FILENAME))
+            return false;
+        if (this.DATEEXECUTED == null) {
+            if (other.DATEEXECUTED != null)
+                return false;
+        }
+        else if (!this.DATEEXECUTED.equals(other.DATEEXECUTED))
+            return false;
+        if (this.ORDEREXECUTED == null) {
+            if (other.ORDEREXECUTED != null)
+                return false;
+        }
+        else if (!this.ORDEREXECUTED.equals(other.ORDEREXECUTED))
+            return false;
+        if (this.EXECTYPE == null) {
+            if (other.EXECTYPE != null)
+                return false;
+        }
+        else if (!this.EXECTYPE.equals(other.EXECTYPE))
+            return false;
+        if (this.MD5SUM == null) {
+            if (other.MD5SUM != null)
+                return false;
+        }
+        else if (!this.MD5SUM.equals(other.MD5SUM))
+            return false;
+        if (this.DESCRIPTION == null) {
+            if (other.DESCRIPTION != null)
+                return false;
+        }
+        else if (!this.DESCRIPTION.equals(other.DESCRIPTION))
+            return false;
+        if (this.COMMENTS == null) {
+            if (other.COMMENTS != null)
+                return false;
+        }
+        else if (!this.COMMENTS.equals(other.COMMENTS))
+            return false;
+        if (this.TAG == null) {
+            if (other.TAG != null)
+                return false;
+        }
+        else if (!this.TAG.equals(other.TAG))
+            return false;
+        if (this.LIQUIBASE == null) {
+            if (other.LIQUIBASE != null)
+                return false;
+        }
+        else if (!this.LIQUIBASE.equals(other.LIQUIBASE))
+            return false;
+        if (this.CONTEXTS == null) {
+            if (other.CONTEXTS != null)
+                return false;
+        }
+        else if (!this.CONTEXTS.equals(other.CONTEXTS))
+            return false;
+        if (this.LABELS == null) {
+            if (other.LABELS != null)
+                return false;
+        }
+        else if (!this.LABELS.equals(other.LABELS))
+            return false;
+        if (this.DEPLOYMENT_ID == null) {
+            if (other.DEPLOYMENT_ID != null)
+                return false;
+        }
+        else if (!this.DEPLOYMENT_ID.equals(other.DEPLOYMENT_ID))
+            return false;
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + ((this.ID == null) ? 0 : this.ID.hashCode());
+        result = prime * result + ((this.AUTHOR == null) ? 0 : this.AUTHOR.hashCode());
+        result = prime * result + ((this.FILENAME == null) ? 0 : this.FILENAME.hashCode());
+        result = prime * result + ((this.DATEEXECUTED == null) ? 0 : this.DATEEXECUTED.hashCode());
+        result = prime * result + ((this.ORDEREXECUTED == null) ? 0 : this.ORDEREXECUTED.hashCode());
+        result = prime * result + ((this.EXECTYPE == null) ? 0 : this.EXECTYPE.hashCode());
+        result = prime * result + ((this.MD5SUM == null) ? 0 : this.MD5SUM.hashCode());
+        result = prime * result + ((this.DESCRIPTION == null) ? 0 : this.DESCRIPTION.hashCode());
+        result = prime * result + ((this.COMMENTS == null) ? 0 : this.COMMENTS.hashCode());
+        result = prime * result + ((this.TAG == null) ? 0 : this.TAG.hashCode());
+        result = prime * result + ((this.LIQUIBASE == null) ? 0 : this.LIQUIBASE.hashCode());
+        result = prime * result + ((this.CONTEXTS == null) ? 0 : this.CONTEXTS.hashCode());
+        result = prime * result + ((this.LABELS == null) ? 0 : this.LABELS.hashCode());
+        result = prime * result + ((this.DEPLOYMENT_ID == null) ? 0 : this.DEPLOYMENT_ID.hashCode());
+        return result;
+    }
+
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder("Databasechangelog (");
 

@@ -7,6 +7,7 @@ import org.jooq.Record;
 import org.jooq.exception.DataAccessException;
 
 import java.util.*;
+import java.util.stream.Stream;
 
 import static java.util.Arrays.asList;
 import static java.util.Collections.singletonList;
@@ -646,5 +647,8 @@ public abstract class AbstractRecordDAO<R extends UpdatableRecord<R>, Y, T> exte
     public <Z> Optional<R> fetchOptional(Field<Z> field, Z value) throws DataAccessException {
         return Optional.ofNullable(fetchOne(field, value));
     }
+
+
+
 
 }
