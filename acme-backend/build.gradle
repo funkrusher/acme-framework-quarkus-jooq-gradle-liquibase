@@ -16,6 +16,8 @@ dependencies {
     implementation libs.bundles.jooq
     implementation libs.slf4jJbossLogmanager
     implementation libs.mariadbJavaClient
+    implementation libs.jacksonCsv
+    implementation libs.jacksonJsr310
 
     testImplementation libs.bundles.test.quarkus
     testImplementation libs.bundles.test.testcontainers

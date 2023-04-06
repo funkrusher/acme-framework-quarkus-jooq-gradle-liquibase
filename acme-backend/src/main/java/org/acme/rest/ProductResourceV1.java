@@ -1,7 +1,7 @@
 package org.acme.rest;
 
-import io.smallrye.mutiny.Multi;
-import io.vertx.core.http.HttpServerResponse;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+import jakarta.ws.rs.core.StreamingOutput;
 import org.acme.util.exception.ValidationException;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
@@ -9,11 +9,16 @@ import org.acme.dtos.ProductDTO;
 import org.acme.services.ProductService;
 import org.acme.util.query.QueryParameters;
 import org.acme.util.request.RequestContext;
+import com.fasterxml.jackson.dataformat.csv.CsvMapper;
+import com.fasterxml.jackson.dataformat.csv.CsvSchema;
 
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
+
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 
@@ -81,13 +86,33 @@ public class ProductResourceV1 {
 
 
     @GET
-    @Path("/stream")
-    public Multi<ProductDTO> streamAll() {
+    @Produces(MediaType.APPLICATION_OCTET_STREAM)
+    @Path("/csv")
+    public Response streamCsvFile() {
         RequestContext requestContext = new RequestContext(1, 1);
-        var stream = productService.streamAll(requestContext);
+        var productStream = productService.streamAll(requestContext);
 
-        // Create a Multi that emits the records asynchronously
-        return Multi.createFrom().items(stream);
+        CsvMapper csvMapper = new CsvMapper();
+        csvMapper.findAndRegisterModules();
+        csvMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        csvMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS);
+        csvMapper.findAndRegisterModules();
+        csvMapper.registerModule(new JavaTimeModule());
+
+        CsvSchema schema = csvMapper.schemaFor(ProductDTO.class).withHeader();
+
+        StreamingOutput streamingOutput = outputStream -> {
+            OutputStreamWriter writer = new OutputStreamWriter(outputStream, StandardCharsets.UTF_8);
+            Iterable<ProductDTO> itemIterable = productStream::iterator;
+            csvMapper.writer(schema).writeValues(writer).writeAll(itemIterable);
+            writer.flush();
+            writer.close();
+        };
+
+        return Response
+                .ok(streamingOutput, MediaType.APPLICATION_OCTET_STREAM)
+                .header("Content-Disposition", "attachment; filename=items.csv")
+                .build();
     }
 
 }

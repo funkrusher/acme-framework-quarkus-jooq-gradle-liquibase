@@ -21,9 +21,14 @@ dependencyResolutionManagement {
             version('awaitility', '4.1.0')
             version('jooq', '3.16.16')
             version('slf4j-jboss-logmanager', '2.6.1.Final')
+            version('jackson', '2.14.2')
 
             // slf4j-jboss-logmanager (links quarkus jboss-logging so it can log jOOQs slf4j logging)
             library('slf4jJbossLogmanager', 'org.jboss.slf4j', 'slf4j-jboss-logmanager').versionRef('slf4j-jboss-logmanager')
+
+            // jackson (which are not already included in quarkus-jackson
+            library('jacksonCsv', 'com.fasterxml.jackson.dataformat', 'jackson-dataformat-csv').versionRef('jackson')
+            library('jacksonJsr310', 'com.fasterxml.jackson.datatype', 'jackson-datatype-jsr310').versionRef('jackson')
 
             // quarkus
             plugin('quarkusPlugin', 'io.quarkus').versionRef('quarkus')
