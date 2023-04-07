@@ -6,6 +6,7 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import org.acme.util.exception.ValidationException;
+import org.jboss.logging.Logger;
 
 import java.util.HashMap;
 import java.util.Map;

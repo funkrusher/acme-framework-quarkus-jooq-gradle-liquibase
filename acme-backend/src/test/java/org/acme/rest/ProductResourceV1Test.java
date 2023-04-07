@@ -1,6 +1,5 @@
 package org.acme.rest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
 import io.restassured.http.ContentType;
@@ -35,7 +34,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 @QuarkusTest
 @QuarkusTestResource(TestDbLifecycleManager.class)
-public class ProductResourceV1Test  {
+public class ProductResourceV1Test {
 
     @InjectTestDbUtil
     private static TestDbUtil testDbUtil;
@@ -89,8 +88,6 @@ public class ProductResourceV1Test  {
     @Test
     @Order(2)
     public void testUpdate() throws IOException {
-        ObjectMapper objectMapper = new ObjectMapper();
-
         List<ProductLangDTO> xLangs = new ArrayList<>();
 
         ProductLangDTO xLangDTO = new ProductLangDTO();
