@@ -12,6 +12,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import java.net.URI;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -20,6 +21,9 @@ import java.util.Map;
 @ApplicationScoped
 public class CognitoLocalService {
     private static final Logger LOGGER = Logger.getLogger(CognitoLocalService.class);
+
+    @ConfigProperty(name = "cognitolocal.userpoolid")
+    String userPoolId;
 
     @ConfigProperty(name = "cognitolocal.userpoolclientid")
     String userPoolClientId;
@@ -36,11 +40,15 @@ public class CognitoLocalService {
      * @return userSub
      */
     public String signup(String email, String password) {
+        String acmeValue = "mytest";
         SignUpRequest request = SignUpRequest.builder()
                 .clientId(userPoolClientId)
                 .username(email)
                 .password(password)
-                .userAttributes(AttributeType.builder().name("email").value(email).build())
+                .userAttributes(
+                        AttributeType.builder().name("email").value(email).build(),
+                        AttributeType.builder().name("acme").value(acmeValue).build()
+                )
                 .build();
         SignUpResponse response = cognitoIpc.signUp(request);
         return response.userSub();
@@ -75,4 +83,29 @@ public class CognitoLocalService {
         jwtTokens.put("id_token", result.idToken());
         return jwtTokens;
     }
+
+    /**
+     * Find and return an existing user.
+     *
+     * @param email email
+     * @return user-attributes
+     * @throws UserNotFoundException
+     */
+    public Map<String, String> find(String email) throws UserNotFoundException {
+        AdminGetUserRequest request = AdminGetUserRequest.builder()
+                .userPoolId(userPoolId)
+                .username(email)
+                .build();
+        AdminGetUserResponse response = cognitoIpc.adminGetUser(request);
+
+        List<AttributeType> userAttributes = response.userAttributes();
+        Map<String, String> attributesMap = new HashMap<>();
+        for (AttributeType attribute : userAttributes) {
+            attributesMap.put(attribute.name(), attribute.value());
+        }
+        // The attributes of the user can be accessed through the attributesMap object.
+        return attributesMap;
+    }
+
+
 }

@@ -5,12 +5,10 @@ import org.jboss.logging.Logger;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
 import software.amazon.awssdk.regions.Region;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolClientResponse;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolRequest;
-import software.amazon.awssdk.services.cognitoidentityprovider.model.CreateUserPoolResponse;
+import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import java.net.URI;
+import java.util.Arrays;
 
 public class CognitoLocalSetup {
 
@@ -39,6 +37,17 @@ public class CognitoLocalSetup {
         // Create a new user pool
         CreateUserPoolRequest poolRequest = CreateUserPoolRequest.builder()
                 .poolName(POOLNAME)
+                .schema(
+                        SchemaAttributeType.builder()
+                                .name("acme")
+                                .attributeDataType(AttributeDataType.STRING)
+                                .developerOnlyAttribute(false)
+                                .mutable(true)
+                                .required(false)
+                                .stringAttributeConstraints(StringAttributeConstraintsType.builder()
+                                        .maxLength("2048")
+                                        .build())
+                                .build())
                 .build();
         CreateUserPoolResponse poolResponse = cognitoClient.createUserPool(poolRequest);
         String userPoolId = poolResponse.userPool().id();
@@ -48,6 +57,8 @@ public class CognitoLocalSetup {
                 .userPoolId(userPoolId)
                 .clientName(CLIENTNAME)
                 .generateSecret(true)
+                .readAttributes(Arrays.asList("acme")) //Add this line to set the read attributes
+                .writeAttributes(Arrays.asList("acme")) //Add this line to set the write attributes
                 .build();
         CreateUserPoolClientResponse clientResponse = cognitoClient.createUserPoolClient(clientRequest);
         String userPoolClientId = clientResponse.userPoolClient().clientId();
