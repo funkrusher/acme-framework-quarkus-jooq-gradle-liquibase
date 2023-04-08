@@ -138,12 +138,13 @@ cognitolocal.userpoolclientsecret=6sjqzo1wyemkrjecj4qlqembt
 ```
 
 Quarkus will take care of the JWT-Verify, for the JWT that has been created by a successful AWS-Cognito Authentication.
-We need to tell it where to get the OIDC configuration. So make sure that your `application.properties` file also contains the following configurations from the template:
+We need to tell it where to get the OIDC configuration. So make sure that your `application.properties` file also contains the following configurations from the template
+(please insert the correct value for <cognitolocal.userpoolid>):
 ```
 # quarkus oidc
-quarkus.oidc.auth-server-url=http://localhost:9229/local_1WjAUCHg
+quarkus.oidc.auth-server-url=http://localhost:9229/<cognitolocal.userpoolid>
 quarkus.oidc.discovery-enabled=false
-quarkus.oidc.jwks-path=http://localhost:9229/local_1WjAUCHg/.well-known/jwks.json
+quarkus.oidc.jwks-path=http://localhost:9229/<cognitolocal.userpoolid>/.well-known/jwks.json
 ```
 
 You should now start your quarkus application, and navigate to the swagger-ui endpoint:
@@ -151,8 +152,10 @@ You should now start your quarkus application, and navigate to the swagger-ui en
 
 Call the following REST-Endpoint and give it an email+password to create a new user in the pool.
 - `/api/v1/cognitoLocal/signup`
+
 Call the following REST-Endpoint and give it the same email+password, to obtain an access_token as response (and in the cookies)
 - `/api/v1/cognitoLocal/signin`
+
 Click the `Authorize`-Button in swagger-ui and enter the field `access_token (http, Bearer)` with the content of the response of the `/api/v1/cognitoLocal/signin` call.
 
 You have now setup swagger-ui to always provide this `access_token` as an Authorization.
