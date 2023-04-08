@@ -105,6 +105,67 @@ All the described operations can also be started up from within the Intellij IDE
 2. Now open the project via `File`->`Open`.
 3. The project should now be build automatically.
 
+## AWS Cognito Authentication/Authorization with OIDC
+
+The example wants to show how to do Authentication and Authorization with an OIDC Provider.
+To make it easy for local development, we will use an offline emulator for Amazon Cognito here.
+The official offline emulator (`localstack`) can not be used, because most features would require a professional license.
+Therefor we will use the `cognito-local` offline emulator:
+- https://github.com/jagregory/cognito-local
+
+We will first start `cognito-local` as a docker-container running on port 9229:
+```
+cd acme-backend
+docker-compose -f localstack-docker-compose.yml up --build -d
+```
+
+Start the cognitoLocalSetup task from the Console with following command:
+```code
+gradlew cognitoLocalSetup
+```
+please note down the following three outputs of this task:
+- cognitolocal.userpoolid
+- cognitolocal.userpoolclientid
+- cognitolocal.userpoolclientsecret
+
+copy those three outputs directly into your `acme-backend/src/main/resources/application.properties` file.
+For example:
+```
+# cognito-local
+cognitolocal.userpoolid=local_7GsYn8Qh
+cognitolocal.userpoolclientid=67jqekw6w9193e8khcu9d5slh
+cognitolocal.userpoolclientsecret=6sjqzo1wyemkrjecj4qlqembt
+```
+
+Quarkus will take care of the JWT-Verify, for the JWT that has been created by a successful AWS-Cognito Authentication.
+We need to tell it where to get the OIDC configuration. So make sure that your `application.properties` file also contains the following configurations from the template:
+```
+# quarkus oidc
+quarkus.oidc.auth-server-url=http://localhost:9229/local_1WjAUCHg
+quarkus.oidc.discovery-enabled=false
+quarkus.oidc.jwks-path=http://localhost:9229/local_1WjAUCHg/.well-known/jwks.json
+```
+
+You should now start your quarkus application, and navigate to the swagger-ui endpoint:
+- http://localhost:8080/q/swagger-ui/
+
+Call the following REST-Endpoint and give it an email+password to create a new user in the pool.
+- `/api/v1/cognitoLocal/signup`
+Call the following REST-Endpoint and give it the same email+password, to obtain an access_token as response (and in the cookies)
+- `/api/v1/cognitoLocal/signin`
+Click the `Authorize`-Button in swagger-ui and enter the field `access_token (http, Bearer)` with the content of the response of the `/api/v1/cognitoLocal/signin` call.
+
+You have now setup swagger-ui to always provide this `access_token` as an Authorization.
+
+Now you can finally call the following REST-Endpoint:
+- `/api/v1/cognitoLocal/protected-by-quarkus`
+
+Quarkus will automatically check the Authorization HTTP-Header in the request, which contains the access_token.
+Quarkus will then validate this access_token with help of the `quarkus.oidc.jwks-path` you provided in the `application.properties` file.
+This REST-Endpoint will only return Success, if the JWT-Verify is successful. 
+
+An example for RBAC (Role-Based Access-Control) is currently in the making.
+
 ## Third-Party Versions Balancing
 
 The used versions of third-party libraries must be balanced with each other. 
@@ -128,6 +189,8 @@ gradlew -p acme-backend dependencyInsight --dependency validation-api --configur
 - Gradle+IDEA ([gradle-guide](https://docs.gradle.org/current/userguide/idea_plugin.html), [idea-guide](https://www.jetbrains.com/help/idea/work-with-gradle-projects.html#project_encodings)): Setting up gradle with IDEA
 - jOOQ ([guide](https://www.jooq.org/doc/3.18/manual/)): Handle your database querying
     - Insert/Update Only Changed-Values ([read](https://blog.jooq.org/orms-should-update-changed-values-not-just-modified-ones/)): Read about the topic why ORMs should update "changed" values, not just "modified" ones.
+- Cognito-Local ([guide](https://github.com/jagregory/cognito-local)) Free Offline AWS-Cognito Emulator. 
+- Cognito with OIDC ([guide](https://levelup.gitconnected.com/securing-micro-services-in-quarkus-with-aws-cognito-387990c04100)): Setup Quarkus to use OIDC for JWT-Verify of Cognito-Created JWTs.
 
 ## License
 

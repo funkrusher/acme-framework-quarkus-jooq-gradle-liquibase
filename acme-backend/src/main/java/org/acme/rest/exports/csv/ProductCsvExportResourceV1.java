@@ -1,6 +1,5 @@
 package org.acme.rest.exports.csv;
 
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
@@ -13,17 +12,12 @@ import org.acme.dtos.ProductDTO;
 import org.acme.dtos.ProductLangDTO;
 import org.acme.generated.testshop.tables.records.ProductLangRecord;
 import org.acme.generated.testshop.tables.records.ProductRecord;
-import org.acme.jackson.CsvMapperFactory;
 import org.acme.services.ProductService;
+import org.acme.transfer.TransferCsvMapper;
 import org.acme.util.request.RequestContext;
 import org.jooq.Field;
 
-import java.io.ByteArrayOutputStream;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
-import java.util.stream.Stream;
 
 
 @Path("/api/v1/exports/csv/products")
@@ -35,7 +29,8 @@ public class ProductCsvExportResourceV1 {
     ProductService productService;
 
     @Inject
-    CsvMapperFactory csvMapperFactory;
+    @TransferCsvMapper
+    CsvMapper csvMapper;
 
     @GET
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
@@ -50,7 +45,6 @@ public class ProductCsvExportResourceV1 {
             for (Field<?> field : pc.fields()) {
                 fieldNames.add(field.getName());
             }
-            CsvMapper csvMapper = csvMapperFactory.createDefaultCsvMapper();
 
             CsvSchema.Builder builder = CsvSchema.builder();
             for (String nextHeader : fieldNames) {
@@ -94,7 +88,6 @@ public class ProductCsvExportResourceV1 {
             for (Field<?> field : pc.fields()) {
                 fieldNames.add(field.getName());
             }
-            CsvMapper csvMapper = csvMapperFactory.createDefaultCsvMapper();
 
             CsvSchema.Builder builder = CsvSchema.builder();
             for (String nextHeader : fieldNames) {

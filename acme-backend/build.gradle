@@ -14,14 +14,24 @@ dependencies {
     implementation enforcedPlatform(libs.quarkusPlaform)
     implementation libs.bundles.quarkus
     implementation libs.bundles.jooq
+    implementation libs.bundles.aws
     implementation libs.slf4jJbossLogmanager
     implementation libs.mariadbJavaClient
     implementation libs.jacksonCsv
     implementation libs.jacksonJsr310
+    implementation libs.localstack
 
     testImplementation libs.bundles.test.quarkus
     testImplementation libs.bundles.test.testcontainers
     testImplementation libs.awaitility
     testImplementation libs.mariadbJavaClient
     testImplementation libs.restAssured
+}
+
+// cognitoLocalSetup task
+task cognitoLocalSetup(type: JavaExec) {
+    group = 'application'
+    description = 'Runs cognitoLocalInit Java Application'
+    mainClass = 'org.acme.cognito.CognitoLocalSetup'
+    classpath = sourceSets.main.runtimeClasspath
 }

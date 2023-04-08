@@ -22,6 +22,15 @@ dependencyResolutionManagement {
             version('jooq', '3.16.16')
             version('slf4j-jboss-logmanager', '2.6.1.Final')
             version('jackson', '2.14.2')
+            version('localstack', '0.2.23')
+            version('awssdk', '2.17.51')
+
+            // localstack (aws-cognito local dev)
+            library('localstack', 'cloud.localstack', 'localstack-utils').versionRef('localstack')
+
+            // aws-sdk2
+            library('awssdk', 'software.amazon.awssdk', 'bom').versionRef('awssdk')
+            library('awssdkCognitoIdentityProvider', 'software.amazon.awssdk', 'cognitoidentityprovider').versionRef('awssdk')
 
             // slf4j-jboss-logmanager (links quarkus jboss-logging so it can log jOOQs slf4j logging)
             library('slf4jJbossLogmanager', 'org.jboss.slf4j', 'slf4j-jboss-logmanager').versionRef('slf4j-jboss-logmanager')
@@ -40,6 +49,7 @@ dependencyResolutionManagement {
             library('quarkusSmallryeOpenapi', 'io.quarkus', 'quarkus-smallrye-openapi').versionRef('quarkus')
             library('quarkusJunit5', 'io.quarkus', 'quarkus-junit5').versionRef('quarkus')
             library('quarkusHibernateValidator', 'io.quarkus', 'quarkus-hibernate-validator').versionRef('quarkus')
+            library('quarkusOidc', 'io.quarkus', 'quarkus-oidc').versionRef('quarkus')
 
             // mariadb-java-client
             library('mariadbJavaClient', 'org.mariadb.jdbc', 'mariadb-java-client').versionRef('mariadb-java-client')
@@ -61,9 +71,10 @@ dependencyResolutionManagement {
             library('testcontainersJunitJupiter', 'org.testcontainers', 'junit-jupiter').versionRef('testcontainers')
 
             // bundles
-            bundle('quarkus', ['quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusLiquibase', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc'])
+            bundle('quarkus', ['quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusLiquibase', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc', 'quarkusOidc'])
             bundle('testcontainers', ['testcontainers', 'testcontainersMariadb'])
             bundle('jooq', ['jooq', 'jooqMeta', 'jooqCodegen'])
+            bundle('aws', ['awssdk', 'awssdkCognitoIdentityProvider'])
 
             // test-bundles
             bundle('test.quarkus', ['quarkusJunit5', 'quarkusLiquibase', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc'])
