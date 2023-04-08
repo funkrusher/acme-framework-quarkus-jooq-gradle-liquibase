@@ -28,14 +28,16 @@ In the folder `./docs` you can find specific documentations about the different 
 
 To compile and run this demo you will need:
 
-- JDK 17+
-- GraalVM
+- GraalVM JDK 17+
+- Mariadb database
 - Optional: Quarkus Plugin in Intellij-IDEA
 
-In addition, you will need either a Mariadb database, or Docker to run one.
 The project has been set up specifically with Intellij IDEA compatibility in mind.
 
-### Configuring GraalVM and JDK 17+
+### Configuring GraalVM JDK 17+
+
+Download the Java17 GraalVM installer for your platform from:
+- https://github.com/graalvm/graalvm-ce-builds/releases
 
 Make sure that both the `GRAALVM_HOME` and `JAVA_HOME` environment variables have
 been set, and that a JDK 17+ `java` command is on the path. This is also important if you use Intellij IDEA.
