@@ -8,6 +8,8 @@ import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
+import org.acme.auth.MasterTenantOnly;
+import org.acme.auth.TenantAuthorizationPolicy;
 import org.acme.services.CognitoLocalService;
 import org.acme.util.cognito.AcmeClaim;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -58,6 +60,9 @@ public class CognitoLocalResourceV1 {
     @Inject
     ObjectMapper objectMapper;
 
+    @Inject
+    TenantAuthorizationPolicy tenantAuthorizationPolicy;
+
     @POST
     @Path("/signup")
     @Produces(MediaType.TEXT_PLAIN)
@@ -103,11 +108,19 @@ public class CognitoLocalResourceV1 {
     @Path("/protected-by-quarkus")
     @SecurityRequirement(name = "access_token")
     @RolesAllowed("ADMIN")
+    @MasterTenantOnly
     @Produces(MediaType.TEXT_PLAIN)
     public String protectedResource(@Context SecurityContext securityContext) {
         // note: the id_token must be given here!
 
         boolean check = securityContext.isUserInRole("ADMIN");
+        if (!check) {
+            return "no admin! this should never happen";
+        }
+        boolean hasAccessToTenant = tenantAuthorizationPolicy.isGranted(1);
+        if (!hasAccessToTenant) {
+            return "no access for tenant-id 1! this should never happen";
+        }
 
         // roles must be: [ ROLE1 ROLE2 ], not a json array. see:
         // https://quarkus.io/guides/amazon-lambda-http#custom-security-integration

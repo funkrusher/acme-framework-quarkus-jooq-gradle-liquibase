@@ -164,12 +164,13 @@ We need to tell it where to get the OIDC configuration. So make sure that your `
 quarkus.oidc.auth-server-url=http://localhost:9229/<cognitolocal.userpoolid>
 quarkus.oidc.discovery-enabled=false
 quarkus.oidc.jwks-path=http://localhost:9229/<cognitolocal.userpoolid>/.well-known/jwks.json
+quarkus.oidc.roles.role-claim-path=custom:acme_roles
 ```
 
 You should now start your quarkus application, and navigate to the swagger-ui endpoint:
 - http://localhost:8080/q/swagger-ui/
 
-Call the following REST-Endpoint and give it an email+password to create a new user in the pool. Also make sure to give "ADMIN" as the roleId.
+Call the following REST-Endpoint and give it an email+password to create a new user in the pool. Also make sure to give "ADMIN" as the roleId, and the clientId=1 (which we assume as a master-tenant-id that has privileged access)
 - `/api/v1/cognitoLocal/signup`
 
 Call the following REST-Endpoint and give it the same email+password, to obtain an access_token as response (and in the cookies)
@@ -186,7 +187,8 @@ Quarkus will automatically check the Authorization HTTP-Header in the request, w
 Quarkus will then validate this access_token with help of the `quarkus.oidc.jwks-path` you provided in the `application.properties` file.
 This REST-Endpoint will only return Success, if the JWT-Verify is successful. 
 
-The REST-Endpoint will also make sure that the user has the "ADMIN" Role (RBAC). 
+The REST-Endpoint will also make sure that the user must have the "ADMIN" Role (RBAC), and the clientId=1 (Master-Tenant),
+for access to be allowed.
 
 ## Third-Party Versions Balancing
 
