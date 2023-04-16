@@ -16,6 +16,9 @@ import org.acme.generated.testshop.tables.Databasechangeloglock;
 import org.acme.generated.testshop.tables.Lang;
 import org.acme.generated.testshop.tables.Product;
 import org.acme.generated.testshop.tables.ProductLang;
+import org.acme.generated.testshop.tables.Role;
+import org.acme.generated.testshop.tables.User;
+import org.acme.generated.testshop.tables.UserRole;
 import org.jooq.Catalog;
 import org.jooq.Table;
 import org.jooq.impl.SchemaImpl;
@@ -66,6 +69,21 @@ public class Testshop extends SchemaImpl {
     public final ProductLang PRODUCT_LANG = ProductLang.PRODUCT_LANG;
 
     /**
+     * The table <code>testshop.role</code>.
+     */
+    public final Role ROLE = Role.ROLE;
+
+    /**
+     * The table <code>testshop.user</code>.
+     */
+    public final User USER = User.USER;
+
+    /**
+     * The table <code>testshop.user_role</code>.
+     */
+    public final UserRole USER_ROLE = UserRole.USER_ROLE;
+
+    /**
      * No further instances allowed
      */
     private Testshop() {
@@ -86,7 +104,10 @@ public class Testshop extends SchemaImpl {
             Databasechangeloglock.DATABASECHANGELOGLOCK,
             Lang.LANG,
             Product.PRODUCT,
-            ProductLang.PRODUCT_LANG
+            ProductLang.PRODUCT_LANG,
+            Role.ROLE,
+            User.USER,
+            UserRole.USER_ROLE
         );
     }
 }

@@ -1,9 +1,6 @@
 package org.acme.daos;
 
-import org.acme.daos.record.ClientRecordDAO;
-import org.acme.daos.record.LangRecordDAO;
-import org.acme.daos.record.ProductLangRecordDAO;
-import org.acme.daos.record.ProductRecordDAO;
+import org.acme.daos.record.*;
 import org.acme.daos.view.ProductViewDAO;
 import org.acme.jooq.JooqContext;
 
@@ -35,4 +32,13 @@ public class DAOFactory {
     public LangRecordDAO createLangRecordDAO(JooqContext jooqContext) {
         return new LangRecordDAO(jooqContext);
     }
+
+    public UserRecordDAO createUserRecordDAO(JooqContext jooqContext) {
+        return new UserRecordDAO(jooqContext);
+    }
+
+    public UserRoleRecordDAO createUserRoleRecordDAO(JooqContext jooqContext) {
+        return new UserRoleRecordDAO(jooqContext);
+    }
+
 }

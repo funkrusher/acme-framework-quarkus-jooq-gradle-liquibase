@@ -4,12 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.oidc.IdToken;
 import io.quarkus.oidc.RefreshToken;
 import io.quarkus.security.Authenticated;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.NewCookie;
-import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.*;
 import org.acme.services.CognitoLocalService;
+import org.acme.util.cognito.AcmeClaim;
 import org.eclipse.microprofile.jwt.JsonWebToken;
 import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
 import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
@@ -19,7 +19,6 @@ import org.jboss.logging.Logger;
 import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.NotAuthorizedException;
-
 import java.util.Map;
 import java.util.Set;
 
@@ -56,12 +55,19 @@ public class CognitoLocalResourceV1 {
     @Inject
     RefreshToken refreshToken;
 
+    @Inject
+    ObjectMapper objectMapper;
+
     @POST
     @Path("/signup")
     @Produces(MediaType.TEXT_PLAIN)
-    public String signup(@FormParam("email") String email,
-                         @FormParam("password") String password) {
-        String userSub = cognitoLocalService.signup(email, password);
+    public String signup(@FormParam("clientId") Integer clientId,
+                         @FormParam("email") String email,
+                         @FormParam("password") String password,
+                         @FormParam("firstname") String firstname,
+                         @FormParam("lastname") String lastname,
+                         @FormParam("roleId") String roleId) {
+        String userSub = cognitoLocalService.signup(clientId, email, password, firstname, lastname, roleId);
         return "User created successfully: " + userSub;
     }
 
@@ -73,7 +79,7 @@ public class CognitoLocalResourceV1 {
                            @FormParam("password") String password) {
         try {
             Map<String, String> jwtTokens = cognitoLocalService.signin(email, password);
-            return Response.ok(jwtTokens.get("access_token")).cookie(
+            return Response.ok(jwtTokens.get("id_token")).cookie(
                     NewCookie.valueOf("access_token=" + jwtTokens.get("access_token")),
                     NewCookie.valueOf("refresh_token=" + jwtTokens.get("refresh_token")),
                     NewCookie.valueOf("id_token=" + jwtTokens.get("id_token"))
@@ -96,11 +102,16 @@ public class CognitoLocalResourceV1 {
     @GET
     @Path("/protected-by-quarkus")
     @SecurityRequirement(name = "access_token")
-    @Authenticated
+    @RolesAllowed("ADMIN")
     @Produces(MediaType.TEXT_PLAIN)
-    public String protectedResource() {
-        // TODO do i need id-token for authorization
-        // TODO can i use id-token for authorization? access_token does not contain custom claims / any claims.
+    public String protectedResource(@Context SecurityContext securityContext) {
+        // note: the id_token must be given here!
+
+        boolean check = securityContext.isUserInRole("ADMIN");
+
+        // roles must be: [ ROLE1 ROLE2 ], not a json array. see:
+        // https://quarkus.io/guides/amazon-lambda-http#custom-security-integration
+        // https://quarkus.io/guides/security-jwt#custom-factories
 
         String name = accessToken.getName();
         String issuer = accessToken.getIssuer();
@@ -111,6 +122,19 @@ public class CognitoLocalResourceV1 {
             String claimValue = accessToken.getClaim(claimname).toString();
             LOGGER.info(claimname + ": " + claimValue);
         }
+
+        String acmeClaimStr = accessToken.getClaim("custom:acme");
+        if (acmeClaimStr != null) {
+            try {
+                AcmeClaim acmeClaim = objectMapper.readValue(acmeClaimStr, AcmeClaim.class);
+                LOGGER.info("acmeClaim: " + acmeClaim);
+
+            } catch (Exception e) {
+                //
+                e.printStackTrace();
+            }
+        }
+
         LOGGER.info("name: " + name);
         LOGGER.info("issuer: " + issuer);
         LOGGER.info("rawToken: " + rawToken);

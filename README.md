@@ -82,6 +82,23 @@ gradlew test
 The testing-framework will fire up a mariadb-testcontainer automatically and will apply the liquibase-migrations to it. 
 This way the Unit-Tests can expect a real database to be available behind the tested code, and with the help of jOOQ the expected database-content can be validated after each test.
 
+## Rollback for Liquibase-Migrations in Local-Dev
+
+The Liquibase-Migrations are automatically applied when the Quarkus-Application is started (as defined in `application.properties` with the `quarkus.liquibase.migrate-at-start=true` parameter)
+
+It is often convenient in local-dev, to be able to rollback to a specific tag, if you want to switch your git-branch, that you are working on.
+For this use-case a gradle-task is provided, that helps you to rollback your database to a specific changeset. This will automatically execute all rollbacks of already applied changesets until the tag-changeset is reached.   
+```code
+gradlew liquibaseRollback -ProllbackTag=feature-1122
+```
+This example would rollback the following tags, in this order:
+- feature-1321
+- feature-1122
+
+The typical workflow would consider of first rolling back your changesets by rolling back to the latest changeSet-tag in the dev-branch. Then you would switch branches to an other feature branch, and start the quarkus-application, so all changeSets of this branch are applied to your database.
+
+Note: this is only relevant/helpful for local-dev, you never! want to use this with any other environment (staging, production).
+
 ## Dockerizing the application
 
 Start the Native Build from the Console with following command:
@@ -118,7 +135,7 @@ Therefor we will use the `cognito-local` offline emulator:
 We will first start `cognito-local` as a docker-container running on port 9229:
 ```
 cd acme-backend
-docker-compose -f localstack-docker-compose.yml up --build -d
+docker-compose -f cognito-local-docker-compose.yml up --build -d
 ```
 
 Start the cognitoLocalSetup task from the Console with following command:
@@ -152,13 +169,13 @@ quarkus.oidc.jwks-path=http://localhost:9229/<cognitolocal.userpoolid>/.well-kno
 You should now start your quarkus application, and navigate to the swagger-ui endpoint:
 - http://localhost:8080/q/swagger-ui/
 
-Call the following REST-Endpoint and give it an email+password to create a new user in the pool.
+Call the following REST-Endpoint and give it an email+password to create a new user in the pool. Also make sure to give "ADMIN" as the roleId.
 - `/api/v1/cognitoLocal/signup`
 
 Call the following REST-Endpoint and give it the same email+password, to obtain an access_token as response (and in the cookies)
 - `/api/v1/cognitoLocal/signin`
 
-Click the `Authorize`-Button in swagger-ui and enter the field `access_token (http, Bearer)` with the content of the response of the `/api/v1/cognitoLocal/signin` call.
+Click the `Authorize`-Button in swagger-ui and enter the field `access_token (http, Bearer)` with the content of the response of the `/api/v1/cognitoLocal/signin` call. Note that the return of the signin-call does contain the id-token. This is necessary because aws-cognito does not provide all the information we need directly in the access-token. We can/need to use the id-token instead.
 
 You have now setup swagger-ui to always provide this `access_token` as an Authorization.
 
@@ -169,7 +186,7 @@ Quarkus will automatically check the Authorization HTTP-Header in the request, w
 Quarkus will then validate this access_token with help of the `quarkus.oidc.jwks-path` you provided in the `application.properties` file.
 This REST-Endpoint will only return Success, if the JWT-Verify is successful. 
 
-An example for RBAC (Role-Based Access-Control) is currently in the making.
+The REST-Endpoint will also make sure that the user has the "ADMIN" Role (RBAC). 
 
 ## Third-Party Versions Balancing
 

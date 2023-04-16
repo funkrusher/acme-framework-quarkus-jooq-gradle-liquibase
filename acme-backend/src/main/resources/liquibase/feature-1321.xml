@@ -2,8 +2,10 @@
                    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                    http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
-    <changeSet author="bernd" id="changeset2">
-        <comment>Execute SQL and roll it back</comment>
+    <changeSet author="bernd" id="feature-1321">
+        <tagDatabase tag="feature-1321" />
+    </changeSet>
+    <changeSet author="bernd" id="feature-1321-sql">
         <sql>
             -- Generate 15000 random products for client IDs 1, 2, and 3
             INSERT INTO product (clientId, price)

@@ -39,7 +39,17 @@ public class CognitoLocalSetup {
                 .poolName(POOLNAME)
                 .schema(
                         SchemaAttributeType.builder()
-                                .name("acme")
+                                .name("custom:acme")
+                                .attributeDataType(AttributeDataType.STRING)
+                                .developerOnlyAttribute(false)
+                                .mutable(true)
+                                .required(false)
+                                .stringAttributeConstraints(StringAttributeConstraintsType.builder()
+                                        .maxLength("2048")
+                                        .build())
+                                .build(),
+                        SchemaAttributeType.builder()
+                                .name("custom:acme_roles")
                                 .attributeDataType(AttributeDataType.STRING)
                                 .developerOnlyAttribute(false)
                                 .mutable(true)
@@ -57,8 +67,10 @@ public class CognitoLocalSetup {
                 .userPoolId(userPoolId)
                 .clientName(CLIENTNAME)
                 .generateSecret(true)
-                .readAttributes(Arrays.asList("acme")) //Add this line to set the read attributes
-                .writeAttributes(Arrays.asList("acme")) //Add this line to set the write attributes
+                .readAttributes(Arrays.asList("custom:acme")) //Add this line to set the read attributes
+                .writeAttributes(Arrays.asList("custom:acme")) //Add this line to set the write attributes
+                .readAttributes(Arrays.asList("custom:acme_roles")) //Add this line to set the read attributes
+                .writeAttributes(Arrays.asList("custom:acme_roles")) //Add this line to set the write attributes
                 .build();
         CreateUserPoolClientResponse clientResponse = cognitoClient.createUserPoolClient(clientRequest);
         String userPoolClientId = clientResponse.userPoolClient().clientId();

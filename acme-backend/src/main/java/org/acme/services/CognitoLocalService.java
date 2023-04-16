@@ -1,8 +1,21 @@
 package org.acme.services;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Default;
 import jakarta.inject.Inject;
+import org.acme.daos.DAOFactory;
+import org.acme.daos.record.UserRecordDAO;
+import org.acme.daos.record.UserRoleRecordDAO;
+import org.acme.daos.view.ProductViewDAO;
+import org.acme.dtos.UserDTO;
+import org.acme.dtos.UserRoleDTO;
+import org.acme.generated.testshop.tables.records.UserRoleRecord;
+import org.acme.jooq.JooqContext;
+import org.acme.jooq.JooqContextFactory;
+import org.acme.transfer.TransferJsonMapper;
+import org.acme.util.cognito.AcmeClaim;
+import org.acme.util.request.RequestContext;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 import software.amazon.awssdk.auth.credentials.AwsBasicCredentials;
@@ -11,6 +24,7 @@ import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityPr
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,26 +46,87 @@ public class CognitoLocalService {
     @Default
     private CognitoIdentityProviderClient cognitoIpc;
 
+    @Inject
+    JooqContextFactory jooqContextFactory;
+
+    @Inject
+    DAOFactory daoFactory;
+
+    @Inject
+    ObjectMapper objectMapper;
+
     /**
      * Signup a new user into the pool
      *
+     * @param clientId clientId
      * @param email    email
      * @param password password
+     * @param firstname firstname
+     * @param lastname lastname
+     * @param roleId roleId
      * @return userSub
      */
-    public String signup(String email, String password) {
-        String acmeValue = "mytest";
-        SignUpRequest request = SignUpRequest.builder()
-                .clientId(userPoolClientId)
-                .username(email)
-                .password(password)
-                .userAttributes(
-                        AttributeType.builder().name("email").value(email).build(),
-                        AttributeType.builder().name("acme").value(acmeValue).build()
-                )
-                .build();
-        SignUpResponse response = cognitoIpc.signUp(request);
-        return response.userSub();
+    public String signup(
+            Integer clientId,
+            String email,
+            String password,
+            String firstname,
+            String lastname,
+            String roleId) {
+
+        RequestContext requestContext = new RequestContext(clientId, 1);
+        JooqContext jooqContext = jooqContextFactory.createJooqContext(requestContext);
+        UserRecordDAO userRecordDAO = daoFactory.createUserRecordDAO(jooqContext);
+        UserRoleRecordDAO userRoleRecordDAO = daoFactory.createUserRoleRecordDAO(jooqContext);
+
+        UserDTO user = new UserDTO();
+        user.setClientId(clientId);
+        user.setEmail(email);
+        user.setFirstname(firstname);
+        user.setLastname(lastname);
+
+        UserDTO createdUser = null;
+        UserRoleDTO createdUserRole = null;
+        String userSub = null;
+        try {
+            createdUser = userRecordDAO.insertAndReturnDTO(user);
+
+            UserRoleDTO userRole = new UserRoleDTO();
+            userRole.setUserId(createdUser.getUserId());
+            userRole.setRoleId(roleId);
+            createdUserRole = userRoleRecordDAO.insertAndReturnDTO(userRole);
+
+            List<String> roles = new ArrayList<>();
+            roles.add(roleId);
+
+            AcmeClaim acmeClaim = new AcmeClaim(clientId, createdUser.getUserId());
+
+            String acmeClaimStr = objectMapper.writeValueAsString(acmeClaim);
+            String acmeRolesClaimStr = objectMapper.writeValueAsString(roles);
+
+            SignUpRequest request = SignUpRequest.builder()
+                    .clientId(userPoolClientId)
+                    .username(email)
+                    .password(password)
+                    .userAttributes(
+                            AttributeType.builder().name("email").value(email).build(),
+                            AttributeType.builder().name("custom:acme").value(acmeClaimStr).build(),
+                            AttributeType.builder().name("custom:acme_roles").value("[ " + roleId + " ]").build()
+                    )
+                    .build();
+            SignUpResponse response = cognitoIpc.signUp(request);
+            userSub = response.userSub();
+
+        } catch (Exception e) {
+            // delete database entries in case of error (manual rollback)
+            if (createdUserRole != null) {
+                userRoleRecordDAO.delete(createdUserRole.into(new UserRoleRecord()));
+            }
+            if (createdUser != null) {
+                userRecordDAO.deleteById(createdUser.getUserId());
+            }
+        }
+        return userSub;
     }
 
     /**

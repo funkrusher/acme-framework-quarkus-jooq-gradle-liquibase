@@ -11,11 +11,17 @@ import org.acme.generated.testshop.tables.Databasechangeloglock;
 import org.acme.generated.testshop.tables.Lang;
 import org.acme.generated.testshop.tables.Product;
 import org.acme.generated.testshop.tables.ProductLang;
+import org.acme.generated.testshop.tables.Role;
+import org.acme.generated.testshop.tables.User;
+import org.acme.generated.testshop.tables.UserRole;
 import org.acme.generated.testshop.tables.records.ClientRecord;
 import org.acme.generated.testshop.tables.records.DatabasechangeloglockRecord;
 import org.acme.generated.testshop.tables.records.LangRecord;
 import org.acme.generated.testshop.tables.records.ProductLangRecord;
 import org.acme.generated.testshop.tables.records.ProductRecord;
+import org.acme.generated.testshop.tables.records.RoleRecord;
+import org.acme.generated.testshop.tables.records.UserRecord;
+import org.acme.generated.testshop.tables.records.UserRoleRecord;
 import org.jooq.ForeignKey;
 import org.jooq.TableField;
 import org.jooq.UniqueKey;
@@ -40,6 +46,9 @@ public class Keys {
     public static final UniqueKey<LangRecord> KEY_LANG_PRIMARY = Internal.createUniqueKey(Lang.LANG, DSL.name("KEY_lang_PRIMARY"), new TableField[] { Lang.LANG.LANGID }, true);
     public static final UniqueKey<ProductRecord> KEY_PRODUCT_PRIMARY = Internal.createUniqueKey(Product.PRODUCT, DSL.name("KEY_product_PRIMARY"), new TableField[] { Product.PRODUCT.PRODUCTID }, true);
     public static final UniqueKey<ProductLangRecord> KEY_PRODUCT_LANG_PRIMARY = Internal.createUniqueKey(ProductLang.PRODUCT_LANG, DSL.name("KEY_product_lang_PRIMARY"), new TableField[] { ProductLang.PRODUCT_LANG.PRODUCTID, ProductLang.PRODUCT_LANG.LANGID }, true);
+    public static final UniqueKey<RoleRecord> KEY_ROLE_PRIMARY = Internal.createUniqueKey(Role.ROLE, DSL.name("KEY_role_PRIMARY"), new TableField[] { Role.ROLE.ROLEID }, true);
+    public static final UniqueKey<UserRecord> KEY_USER_PRIMARY = Internal.createUniqueKey(User.USER, DSL.name("KEY_user_PRIMARY"), new TableField[] { User.USER.USERID }, true);
+    public static final UniqueKey<UserRoleRecord> KEY_USER_ROLE_PRIMARY = Internal.createUniqueKey(UserRole.USER_ROLE, DSL.name("KEY_user_role_PRIMARY"), new TableField[] { UserRole.USER_ROLE.USERID, UserRole.USER_ROLE.ROLEID }, true);
 
     // -------------------------------------------------------------------------
     // FOREIGN KEY definitions
@@ -48,4 +57,7 @@ public class Keys {
     public static final ForeignKey<ProductRecord, ClientRecord> FK_PRODUCT_CLIENTID = Internal.createForeignKey(Product.PRODUCT, DSL.name("fk_product_clientId"), new TableField[] { Product.PRODUCT.CLIENTID }, Keys.KEY_CLIENT_PRIMARY, new TableField[] { Client.CLIENT.CLIENTID }, true);
     public static final ForeignKey<ProductLangRecord, LangRecord> FK_PRODUCT_LANG_LANGID = Internal.createForeignKey(ProductLang.PRODUCT_LANG, DSL.name("fk_product_lang_langId"), new TableField[] { ProductLang.PRODUCT_LANG.LANGID }, Keys.KEY_LANG_PRIMARY, new TableField[] { Lang.LANG.LANGID }, true);
     public static final ForeignKey<ProductLangRecord, ProductRecord> FK_PRODUCT_LANG_PRODUCTID = Internal.createForeignKey(ProductLang.PRODUCT_LANG, DSL.name("fk_product_lang_productId"), new TableField[] { ProductLang.PRODUCT_LANG.PRODUCTID }, Keys.KEY_PRODUCT_PRIMARY, new TableField[] { Product.PRODUCT.PRODUCTID }, true);
+    public static final ForeignKey<UserRecord, ClientRecord> FK_USER_CLIENTID = Internal.createForeignKey(User.USER, DSL.name("fk_user_clientId"), new TableField[] { User.USER.CLIENTID }, Keys.KEY_CLIENT_PRIMARY, new TableField[] { Client.CLIENT.CLIENTID }, true);
+    public static final ForeignKey<UserRoleRecord, RoleRecord> FK_USER_ROLE_ROLEID = Internal.createForeignKey(UserRole.USER_ROLE, DSL.name("fk_user_role_roleId"), new TableField[] { UserRole.USER_ROLE.ROLEID }, Keys.KEY_ROLE_PRIMARY, new TableField[] { Role.ROLE.ROLEID }, true);
+    public static final ForeignKey<UserRoleRecord, UserRecord> FK_USER_ROLE_USERID = Internal.createForeignKey(UserRole.USER_ROLE, DSL.name("fk_user_role_userId"), new TableField[] { UserRole.USER_ROLE.USERID }, Keys.KEY_USER_PRIMARY, new TableField[] { User.USER.USERID }, true);
 }
