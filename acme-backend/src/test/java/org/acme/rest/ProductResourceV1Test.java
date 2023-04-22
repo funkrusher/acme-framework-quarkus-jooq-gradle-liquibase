@@ -1,8 +1,17 @@
 package org.acme.rest;
 
+import io.quarkus.security.credential.Credential;
+import io.quarkus.security.identity.SecurityIdentity;
 import io.quarkus.test.common.QuarkusTestResource;
 import io.quarkus.test.junit.QuarkusTest;
+import io.quarkus.test.junit.mockito.InjectMock;
+import io.quarkus.test.security.TestSecurity;
+import io.quarkus.test.security.oidc.Claim;
+import io.quarkus.test.security.oidc.ConfigMetadata;
+import io.quarkus.test.security.oidc.OidcSecurity;
+import io.quarkus.test.security.oidc.UserInfo;
 import io.restassured.http.ContentType;
+import org.acme.auth.TenantCredential;
 import org.acme.dtos.ProductDTO;
 import org.acme.dtos.ProductLangDTO;
 import org.acme.generated.PojoUnitTestSerializer;
@@ -15,16 +24,18 @@ import org.acme.test.TestDbLifecycleManager;
 import org.acme.test.TestDbUtil;
 import org.jooq.DSLContext;
 import org.jooq.Result;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static io.restassured.RestAssured.given;
+import static org.acme.auth.AcmeSecurityIdentity.MASTER_TENANT_ID;
+import static org.acme.util.roles.AcmeRoles.ADMIN;
 import static org.hamcrest.CoreMatchers.startsWith;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -38,10 +49,27 @@ public class ProductResourceV1Test {
 
     @InjectTestDbUtil
     private static TestDbUtil testDbUtil;
+    @InjectMock
+    SecurityIdentity identity;
+
+    @BeforeEach
+    public void setup() {
+        Set<String> roles = new HashSet<>();
+        String adminRole = ADMIN;
+        roles.add(adminRole);
+        Set<Credential> credentials = new HashSet();
+        TenantCredential tenantCredential = new TenantCredential(MASTER_TENANT_ID);
+        credentials.add(tenantCredential);
+        Mockito.when(identity.hasRole(adminRole)).thenReturn(true);
+        Mockito.when(identity.getRoles()).thenReturn(roles);
+        Mockito.when(identity.getCredential(TenantCredential.class)).thenReturn(tenantCredential);
+        Mockito.when(identity.getCredentials()).thenReturn(credentials);
+    }
 
     private static Long insertedId = 0L;
 
     @Test
+    @TestSecurity(authorizationEnabled = false)
     @Order(1)
     public void testCreate() throws IOException {
         List<ProductLangDTO> xLangs = new ArrayList<>();
@@ -86,6 +114,7 @@ public class ProductResourceV1Test {
     }
 
     @Test
+    @TestSecurity(authorizationEnabled = false)
     @Order(2)
     public void testUpdate() throws IOException {
         List<ProductLangDTO> xLangs = new ArrayList<>();
@@ -147,6 +176,7 @@ public class ProductResourceV1Test {
 
 
     @Test
+    @TestSecurity(authorizationEnabled = false)
     @Order(3)
     public void testRead() {
         given()
@@ -161,6 +191,7 @@ public class ProductResourceV1Test {
     }
 
     @Test
+    @TestSecurity(authorizationEnabled = false)
     @Order(4)
     public void testDelete() throws IOException {
         ProductDTO productDTO = new ProductDTO();

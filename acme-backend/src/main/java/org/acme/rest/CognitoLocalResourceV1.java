@@ -3,13 +3,12 @@ package org.acme.rest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.quarkus.oidc.IdToken;
 import io.quarkus.oidc.RefreshToken;
-import io.quarkus.security.Authenticated;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.*;
 import org.acme.auth.MasterTenantOnly;
-import org.acme.auth.TenantAuthorizationPolicy;
+import org.acme.auth.AcmeSecurityIdentity;
 import org.acme.services.CognitoLocalService;
 import org.acme.util.cognito.AcmeClaim;
 import org.eclipse.microprofile.jwt.JsonWebToken;
@@ -18,11 +17,13 @@ import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement
 import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.eclipse.microprofile.openapi.annotations.security.SecuritySchemes;
 import org.jboss.logging.Logger;
-import software.amazon.awssdk.services.cognitoidentityprovider.CognitoIdentityProviderClient;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.*;
 import software.amazon.awssdk.services.cognitoidentityprovider.model.NotAuthorizedException;
+
 import java.util.Map;
 import java.util.Set;
+
+import static org.acme.util.roles.AcmeRoles.ADMIN;
 
 
 @SecuritySchemes(value = {
@@ -61,7 +62,7 @@ public class CognitoLocalResourceV1 {
     ObjectMapper objectMapper;
 
     @Inject
-    TenantAuthorizationPolicy tenantAuthorizationPolicy;
+    AcmeSecurityIdentity tenantAuthorizationPolicy;
 
     @POST
     @Path("/signup")
@@ -107,24 +108,20 @@ public class CognitoLocalResourceV1 {
     @GET
     @Path("/protected-by-quarkus")
     @SecurityRequirement(name = "access_token")
-    @RolesAllowed("ADMIN")
+    @RolesAllowed(ADMIN)
     @MasterTenantOnly
     @Produces(MediaType.TEXT_PLAIN)
     public String protectedResource(@Context SecurityContext securityContext) {
         // note: the id_token must be given here!
 
-        boolean check = securityContext.isUserInRole("ADMIN");
+        boolean check = securityContext.isUserInRole(ADMIN);
         if (!check) {
             return "no admin! this should never happen";
         }
-        boolean hasAccessToTenant = tenantAuthorizationPolicy.isGranted(1);
+        boolean hasAccessToTenant = tenantAuthorizationPolicy.hasClientAccess(1);
         if (!hasAccessToTenant) {
             return "no access for tenant-id 1! this should never happen";
         }
-
-        // roles must be: [ ROLE1 ROLE2 ], not a json array. see:
-        // https://quarkus.io/guides/amazon-lambda-http#custom-security-integration
-        // https://quarkus.io/guides/security-jwt#custom-factories
 
         String name = accessToken.getName();
         String issuer = accessToken.getIssuer();

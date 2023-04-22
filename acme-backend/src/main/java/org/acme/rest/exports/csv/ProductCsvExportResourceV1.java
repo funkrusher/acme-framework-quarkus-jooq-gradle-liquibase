@@ -3,11 +3,13 @@ package org.acme.rest.exports.csv;
 import com.fasterxml.jackson.databind.SequenceWriter;
 import com.fasterxml.jackson.dataformat.csv.CsvMapper;
 import com.fasterxml.jackson.dataformat.csv.CsvSchema;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
+import org.acme.auth.AcmeSecurityIdentity;
 import org.acme.dtos.ProductDTO;
 import org.acme.dtos.ProductLangDTO;
 import org.acme.generated.testshop.tables.records.ProductLangRecord;
@@ -26,6 +28,9 @@ import java.util.*;
 public class ProductCsvExportResourceV1 {
 
     @Inject
+    AcmeSecurityIdentity acmeSecurityIdentity;
+
+    @Inject
     ProductService productService;
 
     @Inject
@@ -33,10 +38,11 @@ public class ProductCsvExportResourceV1 {
     CsvMapper csvMapper;
 
     @GET
+    @Authenticated
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/")
     public Response streamRootCsvFile() {
-        RequestContext requestContext = new RequestContext(1, 1);
+        RequestContext requestContext = new RequestContext(acmeSecurityIdentity, 1);
         var productStream = productService.streamAll(requestContext);
 
         StreamingOutput streamingOutput = outputStream -> {
@@ -76,10 +82,11 @@ public class ProductCsvExportResourceV1 {
 
 
     @GET
+    @Authenticated
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/lang")
     public Response streamLangCsvFile() {
-        RequestContext requestContext = new RequestContext(1, 1);
+        RequestContext requestContext = new RequestContext(acmeSecurityIdentity, 1);
         var productStream = productService.streamAll(requestContext);
 
         StreamingOutput streamingOutput = outputStream -> {

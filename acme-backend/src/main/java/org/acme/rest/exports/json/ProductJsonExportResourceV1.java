@@ -2,6 +2,7 @@ package org.acme.rest.exports.json;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SequenceWriter;
+import io.quarkus.security.Authenticated;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -10,6 +11,7 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.StreamingOutput;
+import org.acme.auth.AcmeSecurityIdentity;
 import org.acme.dtos.ProductDTO;
 import org.acme.transfer.TransferJsonMapper;
 import org.acme.services.ProductService;
@@ -24,6 +26,9 @@ import java.util.*;
 public class ProductJsonExportResourceV1 {
 
     @Inject
+    AcmeSecurityIdentity acmeSecurityIdentity;
+
+    @Inject
     ProductService productService;
 
     @Inject
@@ -31,10 +36,11 @@ public class ProductJsonExportResourceV1 {
     ObjectMapper objectMapper;
 
     @GET
+    @Authenticated
     @Produces(MediaType.APPLICATION_OCTET_STREAM)
     @Path("/")
     public Response streamRootJsonFile() {
-        RequestContext requestContext = new RequestContext(1, 1);
+        RequestContext requestContext = new RequestContext(acmeSecurityIdentity, 1);
         var productStream = productService.streamAll(requestContext);
 
         StreamingOutput streamingOutput = outputStream -> {

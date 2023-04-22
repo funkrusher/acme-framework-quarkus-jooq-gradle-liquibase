@@ -8,12 +8,15 @@ public class AcmeClaim {
 
     private Integer userId;
 
+    private List<String> roles;
+
     public AcmeClaim() {
     }
 
-    public AcmeClaim(final Integer clientId, final Integer userId) {
+    public AcmeClaim(final Integer clientId, final Integer userId, final List<String> roles) {
         this.clientId = clientId;
         this.userId = userId;
+        this.roles = roles;
     }
 
     public Integer getClientId() {
@@ -33,4 +36,11 @@ public class AcmeClaim {
         this.userId = userId;
     }
 
+    public List<String> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<String> roles) {
+        this.roles = roles;
+    }
 }

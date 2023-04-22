@@ -11,13 +11,11 @@ import io.smallrye.mutiny.Uni;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.acme.util.cognito.AcmeClaim;
-import org.eclipse.microprofile.jwt.JsonWebToken;
 
 import java.security.Principal;
-import java.util.function.Supplier;
 
 @ApplicationScoped
-public class RolesAugmentor implements SecurityIdentityAugmentor {
+public class CredentialsAugmentor implements SecurityIdentityAugmentor {
 
     private static final String ACME_CLAIM = "custom:acme";
 
@@ -30,7 +28,6 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
             return Uni.createFrom().item(identity);
         } else {
             QuarkusSecurityIdentity.Builder builder = QuarkusSecurityIdentity.builder(identity);
-
             Principal principal = identity.getPrincipal();
             if (principal instanceof JWTCallerPrincipal) {
                 JWTCallerPrincipal jwtPrincipal = (JWTCallerPrincipal) principal;
@@ -38,7 +35,14 @@ public class RolesAugmentor implements SecurityIdentityAugmentor {
                 if (acmeClaimStr != null) {
                     try {
                         AcmeClaim acmeClaim = objectMapper.readValue(acmeClaimStr, AcmeClaim.class);
-                        builder.addCredential(new TenantCredential(acmeClaim.getClientId()));
+                        if (acmeClaim.getClientId() != null) {
+                            builder.addCredential(new TenantCredential(acmeClaim.getClientId()));
+                        }
+                        if (acmeClaim.getRoles() != null) {
+                            for (String role : acmeClaim.getRoles()) {
+                                builder.addRole(role);
+                            }
+                        }
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

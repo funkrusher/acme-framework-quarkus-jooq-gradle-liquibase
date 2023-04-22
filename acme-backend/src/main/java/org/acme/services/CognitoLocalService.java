@@ -99,10 +99,8 @@ public class CognitoLocalService {
             List<String> roles = new ArrayList<>();
             roles.add(roleId);
 
-            AcmeClaim acmeClaim = new AcmeClaim(clientId, createdUser.getUserId());
-
+            AcmeClaim acmeClaim = new AcmeClaim(clientId, createdUser.getUserId(), roles);
             String acmeClaimStr = objectMapper.writeValueAsString(acmeClaim);
-            String acmeRolesClaimStr = objectMapper.writeValueAsString(roles);
 
             SignUpRequest request = SignUpRequest.builder()
                     .clientId(userPoolClientId)
@@ -110,8 +108,7 @@ public class CognitoLocalService {
                     .password(password)
                     .userAttributes(
                             AttributeType.builder().name("email").value(email).build(),
-                            AttributeType.builder().name("custom:acme").value(acmeClaimStr).build(),
-                            AttributeType.builder().name("custom:acme_roles").value("[ " + roleId + " ]").build()
+                            AttributeType.builder().name("custom:acme").value(acmeClaimStr).build()
                     )
                     .build();
             SignUpResponse response = cognitoIpc.signUp(request);

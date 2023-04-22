@@ -50,6 +50,9 @@ dependencyResolutionManagement {
             library('quarkusJunit5', 'io.quarkus', 'quarkus-junit5').versionRef('quarkus')
             library('quarkusHibernateValidator', 'io.quarkus', 'quarkus-hibernate-validator').versionRef('quarkus')
             library('quarkusOidc', 'io.quarkus', 'quarkus-oidc').versionRef('quarkus')
+            library('quarkusTestSecurity', 'io.quarkus', 'quarkus-test-security').versionRef('quarkus')
+            library('quarkusTestSecurityOidc', 'io.quarkus', 'quarkus-test-security-oidc').versionRef('quarkus')
+            library('quarkusJunit5Mockito', 'io.quarkus', 'quarkus-junit5-mockito').versionRef('quarkus')
 
             // mariadb-java-client
             library('mariadbJavaClient', 'org.mariadb.jdbc', 'mariadb-java-client').versionRef('mariadb-java-client')
@@ -77,7 +80,7 @@ dependencyResolutionManagement {
             bundle('aws', ['awssdk', 'awssdkCognitoIdentityProvider'])
 
             // test-bundles
-            bundle('test.quarkus', ['quarkusJunit5', 'quarkusLiquibase', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc'])
+            bundle('test.quarkus', ['quarkusJunit5', 'quarkusLiquibase', 'quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc', 'quarkusTestSecurity', 'quarkusTestSecurityOidc', 'quarkusJunit5Mockito'])
             bundle('test.testcontainers', ['testcontainers', 'testcontainersMariadb', 'testcontainersJunitJupiter'])
         }
     }

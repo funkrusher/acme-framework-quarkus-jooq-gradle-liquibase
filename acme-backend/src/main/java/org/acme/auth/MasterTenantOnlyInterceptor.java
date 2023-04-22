@@ -7,6 +7,8 @@ import jakarta.interceptor.AroundInvoke;
 import jakarta.interceptor.Interceptor;
 import jakarta.interceptor.InvocationContext;
 
+import static org.acme.auth.AcmeSecurityIdentity.MASTER_TENANT_ID;
+
 @Interceptor
 @MasterTenantOnly
 public class MasterTenantOnlyInterceptor {
@@ -17,8 +19,8 @@ public class MasterTenantOnlyInterceptor {
     @AroundInvoke
     public Object checkMasterTenantAccess(InvocationContext ctx) throws Exception {
         TenantCredential tenantCredential = securityIdentity.getCredential(TenantCredential.class);
-        if (tenantCredential == null || !tenantCredential.getTenantId().equals(1)) {
-            throw new ForbiddenException("Access denied for master tenant only.");
+        if (tenantCredential == null || !tenantCredential.getTenantId().equals(MASTER_TENANT_ID)) {
+            throw new ForbiddenException("Access for tenant denied!");
         }
         return ctx.proceed();
     }
