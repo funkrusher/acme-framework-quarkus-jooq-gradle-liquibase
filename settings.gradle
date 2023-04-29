@@ -5,7 +5,7 @@ pluginManagement {
         mavenLocal()
     }
     plugins {
-        id "io.quarkus" version '2.16.4.Final'
+        id "io.quarkus" version '3.0.1.Final'
         id "org.kordamp.gradle.jandex" version "1.1.0"
     }
 }
@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         libs {
             // versions
-            version('quarkus', '3.0.0.Beta1')
+            version('quarkus', '3.0.1.Final')
             version('mariadb-java-client', '3.1.2')
             version('testcontainers', '1.17.6')
             version('rest-assured', '4.4.0')
@@ -46,6 +46,7 @@ dependencyResolutionManagement {
             library('quarkusArc', 'io.quarkus', 'quarkus-arc').versionRef('quarkus')
             library('quarkusJdbcMariadb', 'io.quarkus', 'quarkus-jdbc-mariadb').versionRef('quarkus')
             library('quarkusResteasyReactiveJackson', 'io.quarkus', 'quarkus-resteasy-reactive-jackson').versionRef('quarkus')
+            library('quarkusResteasyReactive', 'io.quarkus', 'quarkus-resteasy-reactive').versionRef('quarkus')
             library('quarkusSmallryeOpenapi', 'io.quarkus', 'quarkus-smallrye-openapi').versionRef('quarkus')
             library('quarkusJunit5', 'io.quarkus', 'quarkus-junit5').versionRef('quarkus')
             library('quarkusHibernateValidator', 'io.quarkus', 'quarkus-hibernate-validator').versionRef('quarkus')
@@ -53,6 +54,9 @@ dependencyResolutionManagement {
             library('quarkusTestSecurity', 'io.quarkus', 'quarkus-test-security').versionRef('quarkus')
             library('quarkusTestSecurityOidc', 'io.quarkus', 'quarkus-test-security-oidc').versionRef('quarkus')
             library('quarkusJunit5Mockito', 'io.quarkus', 'quarkus-junit5-mockito').versionRef('quarkus')
+            library('quarkusPanacheCommon', 'io.quarkus', 'quarkus-panache-common').versionRef('quarkus')
+            library('quarkusHibernateReactivePanache', 'io.quarkus', 'quarkus-hibernate-reactive-panache').versionRef('quarkus')
+            library('quarkusReactiveMysqlClient', 'io.quarkus', 'quarkus-reactive-mysql-client').versionRef('quarkus')
 
             // mariadb-java-client
             library('mariadbJavaClient', 'org.mariadb.jdbc', 'mariadb-java-client').versionRef('mariadb-java-client')
@@ -74,7 +78,9 @@ dependencyResolutionManagement {
             library('testcontainersJunitJupiter', 'org.testcontainers', 'junit-jupiter').versionRef('testcontainers')
 
             // bundles
-            bundle('quarkus', ['quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusLiquibase', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc', 'quarkusOidc'])
+            bundle('quarkusShared', ['quarkusResteasyReactiveJackson', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc', 'quarkusOidc'])
+            bundle('quarkus', ['quarkusJdbcMariadb', 'quarkusResteasyReactiveJackson', 'quarkusLiquibase', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc', 'quarkusOidc', 'quarkusPanacheCommon', 'quarkusHibernateReactivePanache', 'quarkusReactiveMysqlClient'])
+            bundle('quarkusForPanache', ['quarkusJdbcMariadb', 'quarkusResteasyReactive', 'quarkusResteasyReactiveJackson', 'quarkusSmallryeOpenapi', 'quarkusHibernateValidator', 'quarkusArc', 'quarkusOidc',  'quarkusHibernateReactivePanache', 'quarkusReactiveMysqlClient'])
             bundle('testcontainers', ['testcontainers', 'testcontainersMariadb'])
             bundle('jooq', ['jooq', 'jooqMeta', 'jooqCodegen'])
             bundle('aws', ['awssdk', 'awssdkCognitoIdentityProvider'])

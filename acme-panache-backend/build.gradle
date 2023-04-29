@@ -11,9 +11,8 @@ repositories {
     mavenLocal()
 }
 dependencies {
-    implementation project(':acme-shared')
     implementation enforcedPlatform(libs.quarkusPlaform)
-    implementation libs.bundles.quarkus
+    implementation libs.bundles.quarkusForPanache
     implementation libs.bundles.aws
     implementation libs.slf4jJbossLogmanager
     implementation libs.mariadbJavaClient
