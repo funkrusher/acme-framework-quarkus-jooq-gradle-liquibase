@@ -1,0 +1,51 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'io.quarkus'
+    id "org.liquibase.gradle" version "2.0.2"
+}
+
+// dependencies-resolvement
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+dependencies {
+    implementation project(':acme-shared')
+    implementation enforcedPlatform(libs.quarkusPlaform)
+    implementation libs.bundles.quarkus
+    implementation libs.bundles.aws
+    implementation libs.slf4jJbossLogmanager
+    implementation libs.mariadbJavaClient
+    implementation libs.jacksonCsv
+    implementation libs.jacksonJsr310
+    implementation libs.localstack
+
+    testImplementation libs.bundles.test.quarkus
+    testImplementation libs.bundles.test.testcontainers
+    testImplementation libs.awaitility
+    testImplementation libs.mariadbJavaClient
+    testImplementation libs.restAssured
+}
+
+// liquibase command, needed to apply rollbacks in local-dev.
+def properties = new Properties()
+file('src/main/resources/application.properties').withInputStream {
+    stream -> properties.load(stream)
+}
+
+println  properties.getProperty('quarkus.datasource.jdbc.url')
+println  properties.getProperty('quarkus.datasource.username')
+println  properties.getProperty('quarkus.datasource.password')
+
+task liquibaseRollback(type: JavaExec) {
+    classpath sourceSets.main.runtimeClasspath
+    main 'liquibase.integration.commandline.Main'
+    args '--changeLogFile=liquibase/changelog.xml',
+            '--driver=org.mariadb.jdbc.Driver',
+            '--url=' + properties.getProperty('quarkus.datasource.jdbc.url'),
+            '--username=' + properties.getProperty('quarkus.datasource.username'),
+            '--password=' + properties.getProperty('quarkus.datasource.password'),
+            'rollback',
+            project.properties['rollbackTag'] ? project.properties['rollbackTag'] : ''
+}

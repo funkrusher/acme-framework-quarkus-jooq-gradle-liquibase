@@ -47,13 +47,20 @@ for help setting up your environment.
 
 ### Configuring application.properties
 
-Copy the file `acme-backend/src/main/resources/application-template.properties` to `application.properties`.
+Copy the file `acme-xxx-backend/src/main/resources/application-template.properties` to `application.properties`.
 
-Edit the file `acme-backend/src/main/resources/application.properties` in your editor of choice and set the following settings for a connection with your Mariadb database:
+Edit the file `acme-xxx-backend/src/main/resources/application.properties` in your editor of choice and set the following settings for a connection with your Mariadb database (replace `xxx` with either `jooq` or `panache`):
 ```code
-quarkus.datasource.jdbc.url=jdbc:mariadb://localhost:3306/testshop
+quarkus.datasource.jdbc.url=jdbc:mariadb://localhost:3306/xxx_testshop
 quarkus.datasource.username=xxx
 quarkus.datasource.password=xxx
+```
+
+### Creating the database
+
+Connect with your mariadb-database and create the database (replace `xxx` with either `jooq` or `panache`):
+```
+CREATE DATABASE xxx_testhop
 ```
 
 ## Running the demo
@@ -71,7 +78,7 @@ Start the jOOQ Code-Generator from the Console with following command:
 ```code
 gradlew generateJooqCode
 ```
-The generated code will reside in the folder `acme-code-generator/src/main/generated`. The generator will fire up a mariadb-testcontainer automatically, apply the liquibase-migrations to it and will then generate the code from this database-schema. Afterwards the testcontainer is stopped again. 
+The generated code will reside in the folder `acme-jooq-code-generator/src/main/generated`. The generator will fire up a mariadb-testcontainer automatically, apply the liquibase-migrations to it and will then generate the code from this database-schema. Afterwards the testcontainer is stopped again. 
 
 ## Running the Unit-Tests
 
@@ -110,10 +117,10 @@ The build produces the `quarkus-run.jar` file in the `build/quarkus-app/` direct
 
 If you want to execute the app as a docker-container just start it as follows, after running the build.
 ```shell script
-cd ./acme-backend
+cd ./acme-jooq-backend
 docker-compose up --build
 ```
-This will start up a docker-container build with the `acme-backend/src/main/docker/Dockerfile.jvm` which will use the `build/quarkus-app` directory, we have created with our build and start up the `quarkus-run.jar`
+This will start up a docker-container build with the `acme-jooq-backend/src/main/docker/Dockerfile.jvm` which will use the `build/quarkus-app` directory, we have created with our build and start up the `quarkus-run.jar`
 After the docker-container has started we can open a rest-route in our webbrowser and it should work:
 - http://localhost:8080/products/1
 
@@ -134,7 +141,6 @@ Therefor we will use the `cognito-local` offline emulator:
 
 We will first start `cognito-local` as a docker-container running on port 9229:
 ```
-cd acme-backend
 docker-compose -f cognito-local-docker-compose.yml up --build -d
 ```
 
@@ -147,7 +153,7 @@ please note down the following three outputs of this task:
 - cognitolocal.userpoolclientid
 - cognitolocal.userpoolclientsecret
 
-copy those three outputs directly into your `acme-backend/src/main/resources/application.properties` file.
+copy those three outputs directly into your `acme-jooq-backend/src/main/resources/application.properties` file.
 For example:
 ```
 # cognito-local
@@ -201,9 +207,9 @@ and mariadb 10.6 is only supported by jOOQ 3.16. See:
 We need to use Quarkus 3.0.0.Beta, because the jOOQ Code Generator already creates the "jakarta.*" package imports for stuff that was in "javax.*" before.
 Quarkus only starts to support this migration of Jakarta, beginning with 3.0.0.
 
-We also can check conflicting dependencies, with gradlew. For example. The following command would check the dependency `validation-api` in our module `acme-backend` and show as all versions of this (possibly transitive) dependency in the runtime classpath: 
+We also can check conflicting dependencies, with gradlew. For example. The following command would check the dependency `validation-api` in our module `acme-jooq-backend` and show as all versions of this (possibly transitive) dependency in the runtime classpath: 
 ```code
-gradlew -p acme-backend dependencyInsight --dependency validation-api --configuration runtimeClasspath
+gradlew -p acme-jooq-backend dependencyInsight --dependency validation-api --configuration runtimeClasspath
 ```
 
 ## Related Guides

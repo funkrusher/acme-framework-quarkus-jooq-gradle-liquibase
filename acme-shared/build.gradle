@@ -1,0 +1,31 @@
+plugins {
+    id 'java'
+    id 'idea'
+    id 'io.quarkus'
+    id "org.liquibase.gradle" version "2.0.2"
+    id 'org.kordamp.gradle.jandex'
+}
+
+// dependencies-resolvement
+repositories {
+    mavenCentral()
+    mavenLocal()
+}
+dependencies {
+    implementation enforcedPlatform(libs.quarkusPlaform)
+    implementation libs.bundles.quarkus
+    implementation libs.bundles.aws
+    implementation libs.slf4jJbossLogmanager
+    implementation libs.jacksonCsv
+    implementation libs.jacksonJsr310
+    implementation libs.localstack
+}
+
+// cognitoLocalSetup task
+task cognitoLocalSetup(type: JavaExec) {
+    group = 'application'
+    description = 'Runs cognitoLocalInit Java Application'
+    mainClass = 'org.acme.cognito.CognitoLocalSetup'
+    classpath = sourceSets.main.runtimeClasspath
+    dependsOn("jandex")
+}

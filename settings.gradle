@@ -87,5 +87,7 @@ dependencyResolutionManagement {
 }
 
 rootProject.name='acme-framework'
-include 'acme-code-generator'
-include 'acme-backend'
+include 'acme-shared'
+include 'acme-jooq-code-generator'
+include 'acme-jooq-backend'
+include 'acme-panache-backend'
