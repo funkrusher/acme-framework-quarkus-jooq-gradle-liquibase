@@ -1,17 +1,20 @@
 package org.acme.rest;
 
+import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import io.quarkus.hibernate.reactive.panache.common.WithSession;
 import io.quarkus.hibernate.reactive.panache.common.WithTransaction;
-import io.quarkus.security.Authenticated;
+import io.quarkus.panache.common.Sort;
 import io.smallrye.mutiny.Uni;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
 import org.acme.entity.ProductEntity;
+import org.acme.util.panache.PanacheQueryFactory;
+import org.acme.util.query.*;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 
-import java.net.URI;
+import java.util.*;
 
 @Path("/api/v1/products")
 @Produces(MediaType.APPLICATION_JSON)
@@ -69,5 +72,22 @@ public class ProductResourceV1 {
         return ProductEntity.deleteById(productId);
     }
 
+    @GET
+    @Path("/")
+    @Operation(summary = "returns a list of all products")
+    @APIResponse(responseCode = "200", description = "List of all products successful")
+    @APIResponse(responseCode = "500", description = "Server unavailable")
+    @WithTransaction
+    @WithSession
+    public Uni<List<ProductEntity>> query(@BeanParam QueryParameters queryParameters) {
+        try {
+            PanacheQueryFactory factory = new PanacheQueryFactory(ProductEntity.class);
+            PanacheQuery<ProductEntity> panacheQuery = factory.createFromQueryParameters(queryParameters);
+            Uni<List<ProductEntity>> result = panacheQuery.list();
+            return result;
+        } catch (Exception e) {
+            throw new InternalServerErrorException();
+        }
+    }
 
 }
