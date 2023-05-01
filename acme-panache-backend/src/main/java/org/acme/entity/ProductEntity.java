@@ -9,6 +9,7 @@ import org.hibernate.annotations.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity(name = "product")
 @Cacheable
@@ -40,10 +41,9 @@ public class ProductEntity extends PanacheEntityBase {
     public LocalDateTime updatedAt;
     public Boolean deleted;
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "productId", updatable = false, insertable = false)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    public List<ProductLangEntity> langs;
+    public Set<ProductLangEntity> langs;
 
 
 }

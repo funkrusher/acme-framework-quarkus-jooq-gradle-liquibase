@@ -4,20 +4,26 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import jakarta.persistence.*;
-import org.hibernate.annotations.*;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity(name = "product_lang")
 @Cacheable
+@IdClass(ProductLangPK.class)
 public class ProductLangEntity extends PanacheEntityBase {
+
     @Id
-    @Column(name = "productId")
     public Long productId;
     @Id
     public Integer langId;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId("productId")
+    @JsonBackReference
+    public ProductEntity product;
+
+
     public String name;
     public String description;
 

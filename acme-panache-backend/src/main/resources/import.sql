@@ -1,3 +1,12 @@
+INSERT INTO lang (langId, code, description)
+VALUES (1, 'de', 'Deutsch');
+INSERT INTO lang (langId, code, description)
+VALUES (2, 'en', 'English');
+INSERT INTO lang (langId, code, description)
+VALUES (3, 'fr', 'FranÃ§ais');
+INSERT INTO lang (langId, code, description)
+VALUES (4, 'pt', 'PortuguÃªs');
+
 INSERT INTO product (productId, clientId, price)
 VALUES (1, 1, 10.20);
 INSERT INTO product (productId, clientId, price)
