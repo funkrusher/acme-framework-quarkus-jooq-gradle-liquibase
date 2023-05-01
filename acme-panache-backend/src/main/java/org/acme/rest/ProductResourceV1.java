@@ -42,8 +42,7 @@ public class ProductResourceV1 {
     @WithTransaction
     @WithSession
     public Uni<ProductEntity> create(ProductEntity product) {
-        return product.persistAndFlush()
-                .map(ignore -> product);
+        return product.persistAndFlush();
     }
 
     @PUT
@@ -54,7 +53,7 @@ public class ProductResourceV1 {
     @WithTransaction
     @WithSession
     public Uni<ProductEntity> update(ProductEntity product) {
-        return ProductEntity.<ProductEntity>findById(product.productId)
+        return ProductEntity.<ProductEntity>findById(product.id)
                 .invoke(existingProduct -> {
                     existingProduct.updatedAt = product.updatedAt;
                     existingProduct.price = product.price;

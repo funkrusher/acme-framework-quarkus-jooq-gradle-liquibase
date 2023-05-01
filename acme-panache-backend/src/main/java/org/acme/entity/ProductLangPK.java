@@ -1,14 +1,13 @@
 package org.acme.entity;
 
-import jakarta.persistence.Embeddable;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 
 @Embeddable
 public class ProductLangPK implements Serializable {
-    public Long productId;
+    public Long product;
     public Integer langId;
-    // ...
-    // getters and setters
-    // equals() and hashCode() methods
+
 }

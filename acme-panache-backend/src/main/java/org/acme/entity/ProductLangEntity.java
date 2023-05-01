@@ -1,6 +1,7 @@
 package org.acme.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import io.quarkus.hibernate.reactive.panache.PanacheEntity;
 import io.quarkus.hibernate.reactive.panache.PanacheEntityBase;
 import io.quarkus.hibernate.reactive.panache.PanacheQuery;
 import jakarta.persistence.*;
@@ -9,20 +10,13 @@ import java.util.List;
 
 @Entity(name = "product_lang")
 @Cacheable
-@IdClass(ProductLangPK.class)
-public class ProductLangEntity extends PanacheEntityBase {
+public class ProductLangEntity extends PanacheEntity {
 
-    @Id
-    public Long productId;
-    @Id
     public Integer langId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "productId", referencedColumnName = "productId")
-    @MapsId("productId")
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JsonBackReference
     public ProductEntity product;
-
 
     public String name;
     public String description;
