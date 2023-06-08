@@ -30,7 +30,12 @@ import java.util.Set;
         @Filter(name = "product.price.lesser_equal"),
         @Filter(name = "product_lang.name.like", condition = "exists (select 1 from product_lang l where l.productId = productId and l.name = :name)")
 })
-public class ProductEntity extends PanacheEntity {
+public class ProductEntity extends PanacheEntityBase {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "productId")
+    public Long productId;
 
     public Integer clientId;
     public BigDecimal price;
@@ -38,7 +43,7 @@ public class ProductEntity extends PanacheEntity {
     public LocalDateTime updatedAt;
     public Boolean deleted;
 
-    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.PERSIST, orphanRemoval = true)
+    @OneToMany(mappedBy = "product", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
     public Set<ProductLangEntity> langs;
 

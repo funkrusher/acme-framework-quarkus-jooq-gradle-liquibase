@@ -10,11 +10,16 @@ import java.util.List;
 
 @Entity(name = "product_lang")
 @Cacheable
-public class ProductLangEntity extends PanacheEntity {
+public class ProductLangEntity extends PanacheEntityBase {
 
+    @Id
+    public Long productId;
+    @Id
     public Integer langId;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "productId", referencedColumnName = "productId")
+    @MapsId("productId")
     @JsonBackReference
     public ProductEntity product;
 

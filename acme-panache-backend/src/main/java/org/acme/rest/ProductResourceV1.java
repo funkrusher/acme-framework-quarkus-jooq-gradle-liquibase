@@ -53,7 +53,7 @@ public class ProductResourceV1 {
     @WithTransaction
     @WithSession
     public Uni<ProductEntity> update(ProductEntity product) {
-        return ProductEntity.<ProductEntity>findById(product.id)
+        return ProductEntity.<ProductEntity>findById(product.productId)
                 .invoke(existingProduct -> {
                     existingProduct.updatedAt = product.updatedAt;
                     existingProduct.price = product.price;
