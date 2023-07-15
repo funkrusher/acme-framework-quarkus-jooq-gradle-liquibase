@@ -5,7 +5,7 @@ pluginManagement {
         mavenLocal()
     }
     plugins {
-        id "io.quarkus" version '3.0.1.Final'
+        id "io.quarkus" version '3.2.0.Final'
         id "org.kordamp.gradle.jandex" version "1.1.0"
     }
 }
@@ -14,7 +14,7 @@ dependencyResolutionManagement {
     versionCatalogs {
         libs {
             // versions
-            version('quarkus', '3.0.1.Final')
+            version('quarkus', '3.2.0.Final')
             version('mariadb-java-client', '3.1.2')
             version('testcontainers', '1.17.6')
             version('rest-assured', '4.4.0')

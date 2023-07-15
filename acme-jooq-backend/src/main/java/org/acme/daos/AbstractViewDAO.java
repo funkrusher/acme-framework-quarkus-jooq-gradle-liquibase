@@ -129,6 +129,9 @@ public abstract class AbstractViewDAO<R extends UpdatableRecord<R>, P extends Ab
             }
         }
 
+        // TODO: this filter must use the getViewFields, instead of the table().field approach
+        // so it could also filter on the joined tables fields, which is currently not possible
+
         // also see: https://blog.jooq.org/a-functional-programming-approach-to-dynamic-sql-with-jooq/
         Collection<Condition> filterFields = new ArrayList<>();
         if (queryParameters.getFilters().size() > 0) {
@@ -160,6 +163,8 @@ public abstract class AbstractViewDAO<R extends UpdatableRecord<R>, P extends Ab
             }
         }
 
+        // TODO: this query must be reworked, to cope with OFFSET/LIMIT for joined tables.
+        // currently it does joining before paginating on the joined data, which is a no-no, and leads to wrong results.
         var query = getViewQuery()
                 .where(DSL.and(filterFields))
                 .orderBy(sortFields)
