@@ -58,14 +58,14 @@ public class ProductViewDAO extends AbstractViewDAO<ProductRecord, ProductDTO, L
             if (productDTO == null) {
                 ProductRecord productRecord = record.into(new ProductRecord());
                 productDTO = productRecord.into(new ProductDTO());
+                List<ProductLangDTO> xLangs = new ArrayList<>();
+                productDTO.setLangs(xLangs);
                 products.add(productDTO);
                 productMap.put(productId, productDTO);
             }
-            List<ProductLangDTO> xLangs = new ArrayList<>();
             ProductLangRecord xLangRecord = record.into(new ProductLangRecord());
             ProductLangDTO xLang = xLangRecord.into(new ProductLangDTO());
-            xLangs.add(xLang);
-            productDTO.setLangs(xLangs);
+            productDTO.getLangs().add(xLang);
 
             if (xLang.getLangId().equals(requestContext().getLangId())) {
                 productDTO.setLang(xLang);
