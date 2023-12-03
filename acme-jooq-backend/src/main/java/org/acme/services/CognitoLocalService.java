@@ -109,6 +109,12 @@ public class CognitoLocalService {
             SignUpResponse response = cognitoIpc.signUp(request);
             userSub = response.userSub();
 
+            AdminConfirmSignUpRequest confirmRequest = AdminConfirmSignUpRequest.builder()
+                    .userPoolId(userPoolId)
+                    .username(email)
+                    .build();
+            AdminConfirmSignUpResponse confirmResponse = cognitoIpc.adminConfirmSignUp(confirmRequest);
+
         } catch (Exception e) {
             // delete database entries in case of error (manual rollback)
             if (createdUserRole != null) {
