@@ -6,6 +6,11 @@ plugins {
     id 'org.kordamp.gradle.jandex'
 }
 
+// needed, so jandex does not throw an error for enums. See: https://github.com/helidon-io/helidon/issues/7659
+jandex {
+    version = '3.1.5'
+}
+
 // dependencies-resolvement
 repositories {
     mavenCentral()
