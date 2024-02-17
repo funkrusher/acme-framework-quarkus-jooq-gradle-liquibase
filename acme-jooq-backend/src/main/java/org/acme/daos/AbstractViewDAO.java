@@ -163,15 +163,32 @@ public abstract class AbstractViewDAO<R extends UpdatableRecord<R>, P extends Ab
             }
         }
 
-        // TODO: this query must be reworked, to cope with OFFSET/LIMIT for joined tables.
-        // currently it does joining before paginating on the joined data, which is a no-no, and leads to wrong results.
-        var query = getViewQuery()
+        // Remote-Paginate Query that copes with the typical OFFSET/LIMIT trick for joined tables.
+        //
+        // 1. join all tables for filtering but only select the grouped-ids of the main-table where the filters
+        // have matched, so we can make sure that the OFFSET/LIMIT is working correctly.
+        //
+        // 2. select all full joined entries for the found grouped-ids of the main-table (those may be more entries
+        // than the LIMIT given, but this is ok then as they are combined in the upper layer.
+        //
+        var query = ctx()
+                .select(pk())
+                .from(getViewJoins())
                 .where(DSL.and(filterFields))
+                .groupBy(pk())
                 .orderBy(sortFields)
                 .offset(queryParameters.getPage())
                 .limit(queryParameters.getPageSize());
 
-        var result = query.fetch();
+        var records = query.fetchInto(table());
+        List<T> ids = new ArrayList<T>();
+        for (R record : records) {
+            T id = getId(record);
+            ids.add(id);
+        }
+        Field<?>[] pk = pk();
+        var result = getViewQuery().where(equal(pk, ids)).fetch();
+
         return recordsToView(result);
     }
 }
