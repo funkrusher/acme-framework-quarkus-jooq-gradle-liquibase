@@ -1,6 +1,7 @@
 package org.acme.daos.view;
 
 import org.acme.daos.AbstractViewDAO;
+import org.acme.daos.RecordToViewMapper;
 import org.acme.dtos.ProductDTO;
 import org.acme.dtos.ProductLangDTO;
 import org.acme.generated.AbstractDTO;
@@ -17,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import static java.util.stream.Collectors.groupingBy;
@@ -51,34 +53,22 @@ public class ProductViewDAO extends AbstractViewDAO<ProductRecord, ProductDTO, L
                         .eq(Product.PRODUCT.PRODUCTID));
     }
 
+    private final RecordToViewMapper<ProductDTO, Long> productViewMapper = new RecordToViewMapper<>(
+            ProductDTO.class,
+            Product.PRODUCT.PRODUCTID,
+            List.of(Product.PRODUCT.PRODUCTID));
 
-
-    private List<Record> extractRecords(List<Record> records, List<Field<?>> uniqueFields) {
-        Map<String, Record> uniqueRecords = new HashMap<>();
-        for (Record record : records) {
-            String key = "";
-            for (Field<?> uniqueField : uniqueFields) {
-                String test = record.getValue(uniqueField).toString();
-                key += test;
-            }
-            uniqueRecords.put(key, record);
-        }
-        return uniqueRecords.values().stream().toList();
-    }
-
-
+    private final RecordToViewMapper<ProductLangDTO, Long> productLangViewMapper = new RecordToViewMapper<>(
+            ProductLangDTO.class,
+            Product.PRODUCT.PRODUCTID,
+            List.of(ProductLang.PRODUCT_LANG.PRODUCTID, ProductLang.PRODUCT_LANG.LANGID));
 
     @Override
     protected List<ProductDTO> recordsToView(List<Record> records) {
-        // uniquely get entries and swallow duplicates.
-        List<ProductDTO> products = extractRecords(records, List.of(Product.PRODUCT.PRODUCTID))
-                .stream().map(r -> r.into(new ProductRecord()).into(new ProductDTO())).toList();
-         Map<Long, List<ProductLangDTO>> langs = extractRecords(records, List.of(ProductLang.PRODUCT_LANG.PRODUCTID, ProductLang.PRODUCT_LANG.LANGID))
-                .stream().map(r -> r.into(new ProductLangRecord()).into(new ProductLangDTO()))
-                .collect(groupingBy(ProductLangDTO::getProductId));
-
+        final List<ProductDTO> products = productViewMapper.extractRecords(records);
+        final Map<Long, List<ProductLangDTO>> langs = productLangViewMapper.extractRecordsGroupedBy(records);
         for (ProductDTO product : products) {
-            List<ProductLangDTO> productLangs = langs.get(product.getProductId());
+            final List<ProductLangDTO> productLangs = langs.get(product.getProductId());
             product.setLangs(productLangs);
             for (ProductLangDTO productLang : productLangs) {
                 if (productLang.getLangId().equals(requestContext().getLangId())) {
